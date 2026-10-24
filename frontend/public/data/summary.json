@@ -1,0 +1,1 @@
+{"generated":"2026-10-24","n_stations":6438,"n_manual":5516,"n_dwlr":922,"n_obs":414106,"first_year":1994,"last_year":2025,"n_campaign_values":246887,"risk_counts":{"Normal":1870,"Insufficient history":848,"Watch":807,"Alert":523},"trend":{"n_wells":2868,"sig_deepening":523,"sig_rising":306},"season_names":["Jan","May (pre-monsoon)","Aug (monsoon)","Nov (post-monsoon)"]}
