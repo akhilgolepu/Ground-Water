@@ -19,9 +19,10 @@ Status as of 2026-10-24. Items marked **author** need decisions or accounts only
 - [x] Pinned environment (`requirements-research.txt`)
 - [x] `CITATION.cff`
 - [x] Local tag `v1.0.0-rc1` on branch `research/p1`
-- [ ] **author** Choose a licence (code and outputs)
+- [x] Licence: MIT (code) + CC BY 4.0 (results, paper, docs); `LICENSE`, `LICENSES.md`, `.zenodo.json`
 - [ ] **author** Confirm redistribution terms of the Kaggle compilation of CGWB data (data card)
-- [ ] **author** Merge `research/p1`, push to GitHub, create the release
+- [x] Merged `research/p1` into `main` and pushed with tag `v1.0.0-rc1`
+- [ ] **author** Create the GitHub release from the tag (needed for the Zenodo integration)
 - [ ] **author** Enable the GitHub–Zenodo integration (or upload manually) to mint the DOI
 
 ## Preprint and submission (step 6.4)

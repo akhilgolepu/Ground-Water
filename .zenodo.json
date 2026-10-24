@@ -1,0 +1,19 @@
+{
+  "title": "AquaSense: monsoon forcing, depth-aware calibration and decision value in national-scale groundwater forecasting for India",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Golepu, Akhil"
+    }
+  ],
+  "license": "MIT",
+  "description": "Code, results, figures, dashboard and manuscript for a national-scale study of groundwater-level forecasting in India: the skill added by monsoon forcing, depth-aware conformal calibration and the economic value of exceedance warnings. Results, figures and text are CC BY 4.0; see LICENSES.md.",
+  "keywords": [
+    "groundwater",
+    "forecasting",
+    "India",
+    "conformal prediction",
+    "decision value",
+    "monsoon"
+  ]
+}

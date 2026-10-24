@@ -59,8 +59,8 @@ Redistribution terms of the groundwater compilation are being confirmed before p
 
 ## Citation and licence
 
-See [CITATION.cff](CITATION.cff). The licence for code and outputs is still to be chosen by the author
-before the public release.
+See [CITATION.cff](CITATION.cff). Code is under the [MIT licence](LICENSE); results, figures, the manuscript
+and docs are under CC BY 4.0; third-party data in `data/raw/` keep their own terms ([LICENSES.md](LICENSES.md)).
 
 ## How this project got here
 

@@ -335,3 +335,19 @@ redistribution terms). They are listed in `paper/submission/checklist.md`. The P
 
 **Remaining (author only).** Name/affiliation/ORCID, licence, data-redistribution check, push and Zenodo DOI,
 preprint, submission (`paper/submission/checklist.md`).
+
+---
+
+## Stage 10 — Licence and publication to GitHub (2026-10-24)
+
+**Request / decisions.** Asked the author two questions; answers: licence **MIT for code + CC BY 4.0 for
+results, paper and docs**; **merge into `main` and push**.
+
+**Work.** Added `LICENSE` (MIT, © 2026 Akhil Golepu), `LICENSES.md` (what each licence covers; third-party
+data in `data/raw/` excluded and keeps its own terms), `.zenodo.json`, the licence in `CITATION.cff` and the
+README. Checked before pushing: remote `main` unchanged since the initial commit (fast-forward), no new file
+over 10 MB, every commit authored by akhilgolepu with no co-author trailers. Fast-forwarded `main`, moved the
+`v1.0.0-rc1` tag to the final commit, pushed `main`, `research/p1` and the tag.
+
+**Remaining (author).** Create the GitHub release from the tag and enable the Zenodo integration to mint the DOI;
+name/affiliation/ORCID; data-redistribution check; preprint; submission.
