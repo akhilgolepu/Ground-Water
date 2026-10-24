@@ -246,6 +246,8 @@ warnings are not recommended. The LLM advisory variant is deferred.
 **Artefacts.** [10-decision-value.md](10-decision-value.md); `reports/decision/` (scores, value curves,
 paired differences, triggers, case study, advisories, three figures); `scripts/reproduce.sh --phase4`.
 
+**Commits.** `5630551` decision-value experiment · `13ed3b0` Phase 4 docs and figures.
+
 ---
 
 ## Stage 7 — Phase 5: dashboard integration (next)
