@@ -1,5 +1,17 @@
 # ML-Based Groundwater Level Forecasting for Sustainable Water Resource Management
 
+> **Status (2026-10-24).** The Phase 1–5 results below came from a pipeline that trained on
+> `wellDepth` (borehole depth, constant per well) instead of the water level, so they are
+> **withdrawn** (see [docs/01-project-audit.md](docs/01-project-audit.md)). The current research
+> pipeline is in `src/research/`, and the research plan, literature review and pilot results are in
+> [docs/](docs/README.md). Reproduce with:
+>
+> ```bash
+> conda activate anpr
+> python -m src.research.ingest && python -m src.research.benchmark
+> cd frontend && npm install && npm run dev
+> ```
+
 An end-to-end, artificial intelligence-driven hydrological decision support system that ingests spatio-temporal groundwater records, performs multi-horizon probabilistic predictions using a **Temporal Fusion Transformer (TFT)**, provides local/global model explainability (**XAI** via VSN and TreeSHAP), and optimizes agricultural tube-well pumping quotas using **Metaheuristic Algorithms (GA & PSO)**.
 
 ---
