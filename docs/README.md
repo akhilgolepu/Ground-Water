@@ -12,6 +12,7 @@ Living documentation for the groundwater-forecasting research project. Update
 | [05-worklog.md](05-worklog.md) | Dated log of work and decisions |
 | [06-phase-plan.md](06-phase-plan.md) | Phases 0–6 with steps, deliverables and exit checks |
 | [07-forcing-data.md](07-forcing-data.md) | IMD rainfall/temperature and ENSO/IOD forcing: sources, processing, sanity checks |
+| [08-skill-decomposition.md](08-skill-decomposition.md) | Phase 2: does monsoon forcing add skill? Arms M0–M3, reference models, robustness, answer to RQ1 |
 | [data-card.md](data-card.md) | Provenance, fields, sign conventions and defects of the CGWB source file |
 | [references.bib](references.bib) | BibTeX for everything cited |
 
@@ -21,7 +22,8 @@ Living documentation for the groundwater-forecasting research project. Update
 - Research pipeline — `src/research/` — **pilot complete** (memory-only).
 - Phase 0 (foundations) — **done**: config, pinned env, 25 unit tests, `scripts/reproduce.sh`.
 - Phase 1 (forcing data) — **done**: IMD 1990–2025 + Niño 3.4/DMI → `forcing_features.parquet`; all sanity checks pass.
-- Phase 2 (skill decomposition) — **next**.
+- Phase 2 (skill decomposition) — **done**: forcing adds a small robust gain (best +5 % MSE at 6 months); oracle headroom 2.5–9.6 %. See [08](08-skill-decomposition.md).
+- Phase 3 (uncertainty calibration) — **next**.
 - Dashboard — `frontend/` — reads `frontend/public/data/*.json` produced by the benchmark.
 
 ## Reproduce

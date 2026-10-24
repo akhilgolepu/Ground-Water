@@ -2,6 +2,24 @@
 
 Running record of what was done, what was found and what was decided. Newest first.
 
+## 2026-10-24 (evening) — Phase 2 complete: skill decomposition (RQ1)
+
+Details and tables: [08-skill-decomposition.md](08-skill-decomposition.md).
+- Nested XGBoost arms M0 → M3 + snapshot control on identical rows, each tuned on 2013–2015.
+- **Answer to RQ1:** memory carries most skill; observed forcing + ENSO/IOD adds a small, robust
+  gain (positive in all 9 horizon × validation settings; best at 6 months, +5.0 % MSE, 22/24 campaigns);
+  a perfect rainfall forecast would add 2.5–9.6 % more; the source file's snapshot rainfall adds nothing.
+- Found that 0.1 % of test readings (datum jumps, e.g. 69.8 → 6.9 m in a quarter) carry 15 % of
+  squared error. Kept in all headline numbers; added absolute-loss DM, a campaign sign test and a
+  no-jump sensitivity run. Decision: sign test + MAE CIs are the primary evidence.
+- Reference models: Random Forest ≈ XGBoost; Chronos-2 zero-shot trails (skill 0.40 vs 0.51 at
+  3 months) but gains 6–7 % MAE from rain covariates. N-HiTS and CHIRPS deferred (reasons in 08).
+- Robustness: alternative split (train ≤ 2017) and 2° spatial blocks (unseen regions).
+- Fixed `scripts/reproduce.sh`: ingest now runs before forcing features (fresh clones failed);
+  added `--phase2`. Installed `chronos-forecasting` 2.3.2 into `anpr`.
+
+**Next:** Phase 3 (depth- and region-aware calibration, adaptive conformal) on the M2 predictions.
+
 ## 2026-10-24 (later) — Phase 0 and Phase 1 complete
 
 **Phase 0 — foundations** (exit check passed)

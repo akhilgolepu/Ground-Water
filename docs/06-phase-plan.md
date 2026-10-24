@@ -51,7 +51,7 @@ numbers in 04 exactly (RMSE 2.406 m at h = 1).
 **Exit check:** sanity checks (a)–(c) pass, every manual well with a campaign series has forcing
 coverage ≥ 95 % of its months, and a unit test proves non-oracle features use no data after the origin.
 
-## Phase 2 — Skill decomposition (RQ1)
+## Phase 2 — Skill decomposition (RQ1) — ✅ done (see 08)
 
 | Step | Action |
 |---|---|
