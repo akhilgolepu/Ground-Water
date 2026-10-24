@@ -98,10 +98,11 @@ def load_dataset(h: int) -> pd.DataFrame:
 
 # ── Model fitting ───────────────────────────────────────────────────────────
 
-def tune_and_fit(train: pd.DataFrame, features: list[str]) -> tuple[xgb.XGBRegressor, dict]:
-    """Inner-validation search (fit ≤ 2012, early-stop on 2013–2015), then refit on all training rows."""
-    inner_fit = train[train["target_year"] <= INNER_FIT_END_YEAR]
-    inner_val = train[train["target_year"] > INNER_FIT_END_YEAR]
+def tune_and_fit(train: pd.DataFrame, features: list[str],
+                 inner_fit_end_year: int = INNER_FIT_END_YEAR) -> tuple[xgb.XGBRegressor, dict]:
+    """Inner-validation search (fit ≤ 2012, early-stop on 2013–2015 by default), then refit on all training rows."""
+    inner_fit = train[train["target_year"] <= inner_fit_end_year]
+    inner_val = train[train["target_year"] > inner_fit_end_year]
     y_fit = inner_fit["y_target"] - inner_fit["y_t"]
     y_val = inner_val["y_target"] - inner_val["y_t"]
     trials = []
