@@ -25,18 +25,15 @@ from src.research.config import (
     CAL_END_YEAR,
     DATA_PROCESSED_DIR,
     EXCEEDANCE_PERCENTILE,
-    FRONTEND_DATA_DIR,
     HORIZONS,
     NOMINAL_LEVELS,
     RANDOM_SEED,
     REPORTS_DIR,
     TRAIN_END_YEAR,
 )
-from src.research.ingest import SEASON_NAMES
 
 DEPTH_CLASS_EDGES = [-np.inf, 5.0, 15.0, 40.0, np.inf]
 DEPTH_CLASS_NAMES = ["< 5 m", "5–15 m", "15–40 m", "≥ 40 m"]
-N_SERIES_EXPORT = 300
 
 FEATURE_COLS = [
     "y_t", "y_lag1", "y_lag2", "y_lag3", "y_lag4", "d1", "d4",
@@ -196,8 +193,7 @@ def run_benchmark():
     print(f"Campaign grid: {len(grid):,} cells, {grid['depth_mbgl'].notna().sum():,} observed.")
 
     benchmark = {"horizons": {}, "split": {"train_end_year": TRAIN_END_YEAR, "cal_end_year": CAL_END_YEAR}}
-    coverage_rows, exported_preds, importance = [], {}, {}
-    operational = None
+    coverage_rows, importance = [], {}
 
     for h in HORIZONS:
         df = build_supervised(grid, catalog, h)
@@ -322,26 +318,6 @@ def run_benchmark():
             [{"feature": FEATURE_LABELS[f], "key": f, "mean_abs_shap_m": float(v)} for f, v in zip(FEATURE_COLS, mean_abs)],
             key=lambda d: -d["mean_abs_shap_m"])
 
-        if h == 1:
-            exported_preds = te[["well_id", "target_idx", "xgb", "lo80", "hi80", "persistence"]].copy()
-            # Operational forecast from each well's latest campaign
-            latest = df[df["split"] == "test"].sort_values("campaign_idx").groupby("well_id").tail(1)
-            latest = latest[latest["year"] >= 2022].copy()
-            latest["depth_class"] = depth_class(latest["y_t"])
-            latest["q50"] = latest["y_t"] + model.predict(latest[FEATURE_COLS])
-            q80 = conformal_quantile(abs_res_cal, 0.8)
-            qmap80 = {k: conformal_quantile(np.abs(gp["y_target"] - gp["xgb"]).to_numpy(), 0.8)
-                      for k, gp in ca.groupby(group_cal) if len(gp) >= 50}
-            grp = latest["target_season"].astype(str) + "|" + latest["depth_class"].astype(str)
-            half = grp.map(qmap80).fillna(q80)
-            latest["lo80"], latest["hi80"] = latest["q50"] - half, latest["q50"] + half
-            thr_all = campaigns.groupby(["well_id", "season"])["depth_mbgl"].agg(
-                lambda s: s.quantile(EXCEEDANCE_PERCENTILE) if len(s) >= 4 else np.nan)
-            latest["threshold"] = pd.MultiIndex.from_arrays([latest["well_id"], latest["target_season"]]).map(thr_all)
-            latest["p_exceed"] = 1.0 - np.searchsorted(
-                res_sorted, (latest["threshold"] - latest["q50"]).to_numpy(), side="right") / len(res_sorted)
-            latest.loc[latest["threshold"].isna(), "p_exceed"] = np.nan
-            operational = latest
 
     # ── Persist research artefacts ──
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -352,90 +328,6 @@ def run_benchmark():
     with open(REPORTS_DIR / "shap_importance.json", "w") as f:
         json.dump(importance, f, indent=2)
     print(f"\nSaved benchmark artefacts to {REPORTS_DIR}/")
-
-    export_frontend_data(campaigns, catalog, benchmark, coverage, importance, exported_preds, operational)
-
-
-# ── Dashboard export ────────────────────────────────────────────────────────
-
-def campaign_label(idx: int) -> str:
-    return f"{idx // 4}-{['Jan', 'May', 'Aug', 'Nov'][idx % 4]}"
-
-
-def risk_class(p: float) -> str:
-    if pd.isna(p):
-        return "Insufficient history"
-    if p >= 0.6:
-        return "Alert"
-    if p >= 0.3:
-        return "Watch"
-    return "Normal"
-
-
-def export_frontend_data(campaigns, catalog, benchmark, coverage, importance, preds, operational):
-    FRONTEND_DATA_DIR.mkdir(parents=True, exist_ok=True)
-    trends = premonsoon_trends(campaigns).set_index("well_id")
-    op = operational.set_index("well_id") if operational is not None else pd.DataFrame()
-
-    stations = []
-    for row in catalog.itertuples():
-        rec = {"id": row.well_id, "lat": round(row.latitude, 4), "lon": round(row.longitude, 4),
-               "net": row.network, "n": int(row.n_obs), "yrs": round(float(row.record_years), 1),
-               "first": row.first_obs.strftime("%Y-%m"), "last": row.last_obs.strftime("%Y-%m"),
-               "median": round(float(row.median_depth_m), 2)}
-        if row.well_id in trends.index:
-            rec["trend"] = round(float(trends.at[row.well_id, "trend_m_per_yr"]), 3)
-            rec["trendP"] = round(float(trends.at[row.well_id, "trend_p"]), 4)
-        if row.well_id in op.index:
-            o = op.loc[row.well_id]
-            rec["fc"] = {"origin": campaign_label(int(o["campaign_idx"])), "target": campaign_label(int(o["target_idx"])),
-                         "now": round(float(o["y_t"]), 2), "q50": round(float(o["q50"]), 2),
-                         "lo": round(float(o["lo80"]), 2), "hi": round(float(o["hi80"]), 2),
-                         "thr": None if pd.isna(o["threshold"]) else round(float(o["threshold"]), 2),
-                         "p": None if pd.isna(o["p_exceed"]) else round(float(o["p_exceed"]), 3)}
-            rec["risk"] = risk_class(o["p_exceed"])
-        stations.append(rec)
-
-    # Spatially stratified sample of long-record wells for the series explorer
-    eligible = catalog[(catalog["network"] == "manual") & catalog["well_id"].isin(preds["well_id"].unique())].copy()
-    eligible["cell"] = (eligible["latitude"] // 1.5).astype(int).astype(str) + "_" + (eligible["longitude"] // 1.5).astype(int).astype(str)
-    picks = eligible.sort_values("n_obs", ascending=False).groupby("cell").head(2)
-    picks = picks.sort_values("n_obs", ascending=False).head(N_SERIES_EXPORT)
-    series = {}
-    for well_id in picks["well_id"]:
-        obs = campaigns[campaigns["well_id"] == well_id].sort_values("campaign_idx")
-        p = preds[preds["well_id"] == well_id].sort_values("target_idx")
-        series[well_id] = {
-            "obs": [[campaign_label(int(i)), round(float(v), 2)] for i, v in zip(obs["campaign_idx"], obs["depth_mbgl"])],
-            "pred": [[campaign_label(int(i)), round(float(a), 2), round(float(b), 2), round(float(c), 2)]
-                     for i, a, b, c in zip(p["target_idx"], p["xgb"], p["lo80"], p["hi80"])],
-        }
-
-    risk_counts = pd.Series([s.get("risk") for s in stations if "risk" in s]).value_counts().to_dict()
-    with_trend = [s for s in stations if "trend" in s]
-    summary = {
-        "generated": pd.Timestamp.now().strftime("%Y-%m-%d"),
-        "n_stations": len(catalog), "n_manual": int((catalog["network"] == "manual").sum()),
-        "n_dwlr": int((catalog["network"] == "DWLR").sum()),
-        "n_obs": int(catalog["n_obs"].sum()),
-        "first_year": int(catalog["first_obs"].min().year), "last_year": int(catalog["last_obs"].max().year),
-        "n_campaign_values": int(len(campaigns)),
-        "risk_counts": risk_counts,
-        "trend": {"n_wells": len(with_trend),
-                  "sig_deepening": sum(1 for s in with_trend if s["trend"] > 0 and s["trendP"] < 0.05),
-                  "sig_rising": sum(1 for s in with_trend if s["trend"] < 0 and s["trendP"] < 0.05)},
-        "season_names": SEASON_NAMES,
-    }
-
-    def _dump(name, obj):
-        with open(FRONTEND_DATA_DIR / name, "w") as f:
-            json.dump(obj, f, separators=(",", ":"))
-
-    _dump("summary.json", summary)
-    _dump("stations.json", stations)
-    _dump("series.json", series)
-    _dump("benchmark.json", {**benchmark, "coverage": coverage.to_dict(orient="records"), "importance": importance})
-    print(f"Exported dashboard data to {FRONTEND_DATA_DIR}/ ({len(stations):,} stations, {len(series)} series).")
 
 
 if __name__ == "__main__":

@@ -74,14 +74,24 @@ BASE_PARAMS = dict(learning_rate=0.05, subsample=0.8, colsample_bytree=0.8, tree
 
 # ── Data ────────────────────────────────────────────────────────────────────
 
-def load_dataset(h: int) -> pd.DataFrame:
-    campaigns = pd.read_parquet(DATA_PROCESSED_DIR / "gwl_campaigns.parquet")
+def load_dataset(h: int, campaigns: pd.DataFrame | None = None, keep_unlabelled: bool = False,
+                 forcing: pd.DataFrame | None = None) -> pd.DataFrame:
+    """
+    Supervised rows for horizon h. `campaigns` overrides the research snapshot (the dashboard passes
+    the snapshot merged with India-WRIS updates); `keep_unlabelled` keeps origins whose target has not
+    been observed yet (operational forecasts); `forcing` overrides the forcing table. Defaults
+    reproduce the Phase 2 dataset exactly.
+    """
+    if campaigns is None:
+        campaigns = pd.read_parquet(DATA_PROCESSED_DIR / "gwl_campaigns.parquet")
     catalog = pd.read_parquet(DATA_PROCESSED_DIR / "station_catalog.parquet")
-    forcing = pd.read_parquet(DATA_PROCESSED_DIR / "forcing_features.parquet")
+    if forcing is None:
+        forcing = pd.read_parquet(DATA_PROCESSED_DIR / "forcing_features.parquet")
 
     grid = add_expanding_climatology(complete_grid(campaigns))
     df = build_supervised(grid, catalog, h)
-    df = df[df["y_target"].notna()].copy()
+    if not keep_unlabelled:
+        df = df[df["y_target"].notna()].copy()
     keep = ["well_id", "campaign_idx"] + PAST_FORCING + TELECONNECTION + SNAPSHOT + [f"oracle_rain_h{h}", f"oracle_rain_ratio_h{h}"]
     df = df.merge(forcing[keep], on=["well_id", "campaign_idx"], how="left")
     df = df.rename(columns={f"oracle_rain_h{h}": "oracle_rain", f"oracle_rain_ratio_h{h}": "oracle_rain_ratio"})

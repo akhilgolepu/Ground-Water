@@ -10,7 +10,6 @@ For each setting it reports M0 → M1 → M2 → M3 gains (MSE and MAE reduction
 sign test, using the same tuning procedure as the main experiment.
 """
 
-import json
 import warnings
 
 import numpy as np

@@ -430,17 +430,15 @@ def save_monthly_table(rain: np.ndarray, used: np.ndarray, glat: np.ndarray, glo
 
 # ── Driver ──────────────────────────────────────────────────────────────────
 
-def run_forcing_features():
-    print("=== Phase 1: Forcing Features ===")
-    catalog = pd.read_parquet(DATA_PROCESSED_DIR / "station_catalog.parquet")
-    campaigns = pd.read_parquet(DATA_PROCESSED_DIR / "gwl_campaigns.parquet")
-    observations = pd.read_parquet(DATA_PROCESSED_DIR / "gwl_observations_clean.parquet")
-
-    print("Loading IMD rainfall (monthly totals) ...")
+def load_forcing_inputs(catalog: pd.DataFrame, verbose: bool = True, save_monthly: bool = False) -> dict:
+    """Loads and repairs the IMD grids and maps every well to its rain and temperature cells."""
+    log = print if verbose else (lambda *a, **k: None)
+    log("Loading IMD rainfall (monthly totals) ...")
     rain_grid, glat, glon, rain_years = load_imd_monthly("rain", "sum")
     rain_grid, n_repaired, n_masked = repair_zero_artefacts(rain_grid)
-    print(f"  years {rain_years[0]}–{rain_years[-1]} ({len(rain_years)}), grid {rain_grid.shape[:2]}; "
-          f"zero-rain cell-years: {n_repaired} repaired from neighbours, {n_masked} set to missing")
+    log(f"  years {rain_years[0]}–{rain_years[-1]} ({len(rain_years)}), grid {rain_grid.shape[:2]}; "
+        f"zero-rain cell-years: {n_repaired} repaired from neighbours, {n_masked} set to missing")
+    catalog = catalog.copy()
     valid = ~np.isnan(np.nanmean(rain_grid, axis=2))
     cells = nearest_valid_cells(catalog["latitude"].to_numpy(), catalog["longitude"].to_numpy(), glat, glon, valid)
     catalog["rain_cell"] = cells
@@ -448,8 +446,9 @@ def run_forcing_features():
     cell_pos = {c: i for i, c in enumerate(used)}
     rain = rain_grid.reshape(-1, N_MONTHS)[used]  # [used cells, months]
     well_row = catalog.set_index("well_id")["rain_cell"].map(cell_pos).astype(float)
-    print(f"  {len(used)} distinct rain cells for {int((cells >= 0).sum())}/{len(cells)} wells")
-    save_monthly_table(rain, used, glat, glon, catalog)
+    log(f"  {len(used)} distinct rain cells for {int((cells >= 0).sum())}/{len(cells)} wells")
+    if save_monthly:
+        save_monthly_table(rain, used, glat, glon, catalog)
 
     tmean, well_row_t = None, None
     try:
@@ -462,12 +461,25 @@ def run_forcing_features():
         tpos = {c: i for i, c in enumerate(tused)}
         tmean = tgrid.reshape(-1, N_MONTHS)[tused]
         well_row_t = pd.Series(tcells, index=catalog["well_id"]).map(tpos).astype(float)
-        print(f"  temperature: {len(tused)} distinct 1° cells")
+        log(f"  temperature: {len(tused)} distinct 1° cells")
     except FileNotFoundError as exc:
-        print(f"  temperature skipped: {exc}")
+        log(f"  temperature skipped: {exc}")
 
     indices_path = EXTERNAL_DIR / "climate_indices.parquet"
     indices = pd.read_parquet(indices_path) if indices_path.exists() else None
+    return {"catalog": catalog, "rain_grid": rain_grid, "glat": glat, "glon": glon, "rain_years": rain_years,
+            "n_repaired": n_repaired, "n_masked": n_masked, "rain": rain, "well_row": well_row,
+            "tmean": tmean, "well_row_t": well_row_t, "indices": indices}
+
+
+def run_forcing_features():
+    print("=== Phase 1: Forcing Features ===")
+    campaigns = pd.read_parquet(DATA_PROCESSED_DIR / "gwl_campaigns.parquet")
+    observations = pd.read_parquet(DATA_PROCESSED_DIR / "gwl_observations_clean.parquet")
+    inp = load_forcing_inputs(pd.read_parquet(DATA_PROCESSED_DIR / "station_catalog.parquet"), save_monthly=True)
+    catalog, rain_grid, glat, rain_years = inp["catalog"], inp["rain_grid"], inp["glat"], inp["rain_years"]
+    n_repaired, n_masked = inp["n_repaired"], inp["n_masked"]
+    rain, well_row, tmean, well_row_t, indices = inp["rain"], inp["well_row"], inp["tmean"], inp["well_row_t"], inp["indices"]
 
     span = campaigns.groupby("well_id")["campaign_idx"].agg(["min", "max"])
     keys = pd.DataFrame({

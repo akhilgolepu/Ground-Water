@@ -7,7 +7,6 @@ Raw downloads live in data/external/ (git-ignored). Re-running skips years alrea
 Sources and licences are documented in docs/07-forcing-data.md.
 """
 
-import io
 import json
 import urllib.request
 from pathlib import Path

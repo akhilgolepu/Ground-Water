@@ -84,7 +84,7 @@ def fig_shap_groups(shap: pd.DataFrame, path):
               "Future rainfall (oracle)", "Location & borehole"]
     colors = ["#2a78d6", "#9aa8ab", "#eb6834", "#1baf7a", "#102a33", "#d6dfde"]
     fig, ax = plt.subplots(figsize=(8, 3.8))
-    labels, left = [], None
+    left = None
     combos = [(a, h) for a in ("M2 + ENSO/IOD", "M3 + oracle rain") for h in (1, 2, 4)]
     for g, c in zip(groups, colors):
         vals = np.array([shap[(shap["arm"] == a) & (shap["h"] == h) & (shap["group"] == g)]["share"].sum() for a, h in combos])
