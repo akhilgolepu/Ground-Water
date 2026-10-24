@@ -27,7 +27,7 @@ Living documentation for the groundwater-forecasting research project. Update
 - Research pipeline — `src/research/` — **pilot complete** (memory-only).
 - Phase 0 (foundations) — **done**: config, pinned env, 25 unit tests, `scripts/reproduce.sh`.
 - Phase 1 (forcing data) — **done**: IMD 1990–2025 + Niño 3.4/DMI → `forcing_features.parquet`; all sanity checks pass.
-- Phase 2 (skill decomposition) — **done**: forcing adds a small robust gain (best +5 % MSE at 6 months); oracle headroom 2.5–9.6 %. See [08](08-skill-decomposition.md).
+- Phase 2 (skill decomposition) — **done**: forcing adds a small robust gain (best +5 % MSE at 6 months); oracle headroom 5.5–9.6 % in the main test (≥ 2.5 % in every robustness check). See [08](08-skill-decomposition.md).
 - Phase 3 (uncertainty calibration) — **done**: rolling recalibration + ACI keeps every depth and region class within ~3 points; drift traced to the 2019–22 strong monsoons. See [09](09-uncertainty-calibration.md).
 - Phase 4 (decision value) — **done**: warnings worth acting on (peak V 0.43 at 3 months; 0.69 for the suction-limit event) once probabilities are recalibrated on a rolling window; trigger = p ≥ C/L. See [10](10-decision-value.md).
 - Phase 5 (dashboard integration) — **done**: static dashboard of RQ1–RQ3 and operational forecasts; every number traced to `reports/`; India-WRIS refresh piloted for Rajasthan. See [11](11-dashboard.md).

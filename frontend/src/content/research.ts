@@ -22,7 +22,7 @@ export const gaps: Gap[] = [
     title: "Does the monsoon add skill, and how far ahead?",
     question:
       "Add gridded IMD rainfall accumulated between campaigns, drought indices and ENSO/IOD indices, then measure the extra skill at 3, 6 and 12 months against groundwater memory alone.",
-    why: "Answer: a small, robust gain, largest at 6 months (5% less squared error, better in 22 of 24 test campaigns). A perfect rainfall forecast would add a further 2.5–9.6%. The file's one-day rainfall adds nothing.",
+    why: "Answer: a small, robust gain, largest at 6 months (5% less squared error, better in 22 of 24 test campaigns). A perfect rainfall forecast would add a further 5.5–9.6% (at least 2.5% in every robustness check). The file's one-day rainfall adds nothing.",
     status: "Answered in the paper",
   },
   {

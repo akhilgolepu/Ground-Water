@@ -158,8 +158,8 @@ alternative rainfall product (IMD passed every sanity check; deferred to revisio
    (sign test p ≤ 0.012). Rainfall alone (M1) is smaller and not robust in unseen regions at 12 months.
 3. **The gain is physical:** it concentrates in the forecast that spans the monsoon (May → November
    target, +12 % MSE) and in shallow and mid-depth wells (< 15 m).
-4. **A perfect rainfall forecast would add 2.5–9.6 % more**, growing with horizon and robust in all
-   settings. This is the headroom a skilful seasonal monsoon forecast could unlock (Phase 4 values it).
+4. **A perfect rainfall forecast would add 5.5–9.6 % more in the main test, and at least 2.5 % in every robustness setting**, growing with horizon.
+   This is the headroom a skilful seasonal monsoon forecast could unlock (Phase 4 values it).
 5. **The source file's snapshot rainfall adds nothing** (−2.1 to +0.2 % MSE), reproducing prior
    work's "climate does not help" result. That null came from the feature construction, not the hydrology.
 6. **Model choice matters for the size of the gain:** Random Forest gains less from forcing, while

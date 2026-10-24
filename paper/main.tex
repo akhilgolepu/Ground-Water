@@ -278,23 +278,27 @@ oracle-rainfall models; bands are 95\,\% well-clustered intervals.}
 
 \section{Discussion}
 
-\paragraph{Memory first, forcing second.} At national scale and seasonal lead times, the state of the aquifer explains most of
+\subsection{Memory first, forcing second}
+At national scale and seasonal lead times, the state of the aquifer explains most of
 what can be forecast. Observed rainfall adds a few per cent, concentrated where hydrology says it should: shallow wells and the
 monsoon-spanning forecast. That is consistent with Korean wells \citep{kim2026sources}, where past weather added little and
 known future weather added most, and it reframes the value of climate information for Indian groundwater: the gain lies in
 forecasting the coming monsoon, not in describing the last one.
 
-\paragraph{Reproducing a null result.} The 2026 benchmark on the same file found that climate features added almost nothing. We
+\subsection{Reproducing a null result}
+The 2026 benchmark on the same file found that climate features added almost nothing. We
 reproduce that result with the same construction and show that the feature is a single-day reading. Benchmarks built on public
 compilations need a check of what each column measures.
 
-\paragraph{Calibration under regime change.} Conformal guarantees assume that calibration and test residuals are exchangeable.
+\subsection{Calibration under regime change}
+Conformal guarantees assume that calibration and test residuals are exchangeable.
 Monsoon variability breaks that assumption at the scale of years, and the break is visible in the residuals. Online
 recalibration with adaptive conformal inference is cheap and restored conditional coverage without re-training; the same
 mechanism applied to probabilities restored decision value. Interval coverage alone is not enough evidence for warning
 probabilities.
 
-\paragraph{Limitations.} Abstraction is not observed, so the models cannot separate a pumping response from a climate response
+\subsection{Limitations}
+Abstraction is not observed, so the models cannot separate a pumping response from a climate response
 and cannot support pumping-quota optimisation. Most manual records in the compilation end in 2022--2023, so test campaigns after
 2023 are thin. Regions are coarse latitude--longitude boxes, not aquifer polygons. The datum jumps were kept rather than cleaned.
 Telemetry wells were not used for forecasting. The case study is at state level because an official district list of the Atal

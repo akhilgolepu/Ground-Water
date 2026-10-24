@@ -68,6 +68,6 @@ src.research.paper_figures` regenerates every figure, table and number in the pa
 1. Author name, affiliation, ORCID, contributions (placeholders in `paper/main.tex`).
 2. Licence for the code and outputs, and confirmation that the Kaggle compilation of CGWB data may be
    redistributed (data card §Licence).
-3. Port to the Copernicus LaTeX class and the HESS data-availability format.
+3. ~~Port to the Copernicus LaTeX class~~ — done: `paper/make_hess.py` builds `paper/hess/main_hess.pdf` from `main.tex`.
 4. Push the release to GitHub and archive it on Zenodo to obtain the DOI (outward-facing; not done).
 5. Preprint (ESSOAr or EarthArXiv) and submission (author's accounts).

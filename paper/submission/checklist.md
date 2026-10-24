@@ -3,14 +3,14 @@
 Status as of 2026-10-24. Items marked **author** need decisions or accounts only the author has.
 
 ## Manuscript
-- [x] Complete draft answering RQ1–RQ3 (`paper/main.tex`, `main.pdf`, 12 pages)
+- [x] Complete draft answering RQ1–RQ3 (`paper/main.tex`, `main.pdf`; HESS layout 14 pages)
 - [x] Every number generated from `reports/` (`paper/numbers.tex`, `paper/tables/`)
 - [x] Eight figures at 174 mm width, vector PDF (`paper/figures/`)
 - [x] 38 references, 37 DOIs checked against OpenAlex
 - [x] Internal review against leakage, baselines, uncertainty, claims ([docs/12](../../docs/12-internal-review.md))
 - [ ] **author** Name as it should appear, affiliation, ORCID, author contributions
 - [ ] **author** Read the full text and the limitations; adjust anything you would not defend
-- [ ] Port to the Copernicus LaTeX template (`copernicus.cls`); the content is template-independent
+- [x] HESS version in the Copernicus class: `python paper/make_hess.py` → `paper/hess/main_hess.pdf` (generated from `main.tex`; class files downloaded, not committed)
 - [ ] Code and data availability statement with the Zenodo DOI (after the archive exists)
 - [ ] **author** Suggested referees in the cover letter
 

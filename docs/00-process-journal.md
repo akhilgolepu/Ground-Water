@@ -148,7 +148,7 @@ dashboard · `9468507` Phase 1.
   a no-jump sensitivity run; kept the jumps in every headline number.
 - **RQ1 answer:** memory carries most skill; observed forcing + ENSO/IOD adds a small, robust gain
   (positive in all 9 horizon × setting combinations; best at 6 months, +5.0 % MSE, 22/24 campaigns);
-  a perfect rainfall forecast would add 2.5–9.6 % more; snapshot rainfall adds nothing. Gains
+  a perfect rainfall forecast would add 5.5–9.6 % more in the main test (2.5–9.6 % across all validation settings); snapshot rainfall adds nothing. Gains
   concentrate in the monsoon-spanning May → November forecast and in wells < 15 m.
 - Chronos-2 zero-shot trails the trained models; Random Forest ≈ XGBoost.
 - `scripts/reproduce.sh` ran ingest after forcing features, which fails on a fresh clone. Fixed.
@@ -316,3 +316,22 @@ redistribution terms). They are listed in `paper/submission/checklist.md`. The P
 ("submission confirmation and a public, citable release") therefore remains open until the author acts.
 
 **Commits.** `c8bc5be` figures and draft · `bf5199c` internal review · `8eab5b2` README and citation.
+
+---
+
+## Stage 9 — Consistency pass and HESS template (2026-10-24)
+
+**Request.** "Proceed" (after the release candidate; remaining items were the author's).
+
+**Work.**
+1. *Consistency pass* over headline numbers in the README, docs, dashboard, paper and cover letter. Found that
+   the oracle headroom was quoted as 2.5–9.6 % in some places and 5.5–9.6 % in others: the first spans all
+   validation settings, the second is the main test. All user-facing places now state the main-test range and
+   the robustness minimum explicitly (dashboard agenda, docs index, docs/08, this journal's Stage 4 entry).
+2. *HESS template.* Downloaded the Copernicus LaTeX package (v7.16, class 10.1.34) and wrote
+   `paper/make_hess.py`, which builds `paper/hess/main_hess.tex` / `.pdf` from `main.tex` so there is one
+   source. The class files are downloaded on demand and git-ignored. Discussion paragraphs became subsections
+   (the class numbered `\paragraph` as 5.0.1). Both versions compile with no undefined references.
+
+**Remaining (author only).** Name/affiliation/ORCID, licence, data-redistribution check, push and Zenodo DOI,
+preprint, submission (`paper/submission/checklist.md`).

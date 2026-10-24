@@ -37,3 +37,14 @@ paper/*.fdb_latexmk
 paper/*.fls
 paper/*.log
 paper/*.out
+
+# Copernicus class files and build output (downloaded by paper/make_hess.py)
+paper/hess/copernicus.*
+paper/hess/pdfscreen*.sty
+paper/hess/*.aux
+paper/hess/*.bbl
+paper/hess/*.blg
+paper/hess/*.fdb_latexmk
+paper/hess/*.fls
+paper/hess/*.log
+paper/hess/*.out
