@@ -1,0 +1,248 @@
+{
+  "1": [
+    {
+      "feature": "Current depth",
+      "key": "y_t",
+      "mean_abs_shap_m": 1.242882490158081
+    },
+    {
+      "feature": "Target-season climatology",
+      "key": "clim_target",
+      "mean_abs_shap_m": 0.9427534937858582
+    },
+    {
+      "feature": "Target season",
+      "key": "target_season",
+      "mean_abs_shap_m": 0.42611241340637207
+    },
+    {
+      "feature": "Depth 3 campaigns ago",
+      "key": "y_lag3",
+      "mean_abs_shap_m": 0.31546294689178467
+    },
+    {
+      "feature": "Change since last campaign",
+      "key": "d1",
+      "mean_abs_shap_m": 0.3031374514102936
+    },
+    {
+      "feature": "Origin-season climatology",
+      "key": "clim_origin",
+      "mean_abs_shap_m": 0.2903578281402588
+    },
+    {
+      "feature": "Depth 2 campaigns ago",
+      "key": "y_lag2",
+      "mean_abs_shap_m": 0.25615933537483215
+    },
+    {
+      "feature": "Origin season",
+      "key": "origin_season",
+      "mean_abs_shap_m": 0.2034158706665039
+    },
+    {
+      "feature": "Latitude",
+      "key": "latitude",
+      "mean_abs_shap_m": 0.17409634590148926
+    },
+    {
+      "feature": "Current anomaly",
+      "key": "anom_t",
+      "mean_abs_shap_m": 0.15609771013259888
+    },
+    {
+      "feature": "Borehole depth",
+      "key": "well_depth_m",
+      "mean_abs_shap_m": 0.12779581546783447
+    },
+    {
+      "feature": "Depth 1 campaign ago",
+      "key": "y_lag1",
+      "mean_abs_shap_m": 0.11973246186971664
+    },
+    {
+      "feature": "Record length",
+      "key": "n_past",
+      "mean_abs_shap_m": 0.10983750224113464
+    },
+    {
+      "feature": "Depth 1 year ago",
+      "key": "y_lag4",
+      "mean_abs_shap_m": 0.09419670701026917
+    },
+    {
+      "feature": "Change over past year",
+      "key": "d4",
+      "mean_abs_shap_m": 0.061948876827955246
+    },
+    {
+      "feature": "Longitude",
+      "key": "longitude",
+      "mean_abs_shap_m": 0.0557166263461113
+    }
+  ],
+  "2": [
+    {
+      "feature": "Current depth",
+      "key": "y_t",
+      "mean_abs_shap_m": 1.4784064292907715
+    },
+    {
+      "feature": "Target-season climatology",
+      "key": "clim_target",
+      "mean_abs_shap_m": 1.125819206237793
+    },
+    {
+      "feature": "Origin season",
+      "key": "origin_season",
+      "mean_abs_shap_m": 0.5369300842285156
+    },
+    {
+      "feature": "Change since last campaign",
+      "key": "d1",
+      "mean_abs_shap_m": 0.4500837028026581
+    },
+    {
+      "feature": "Depth 2 campaigns ago",
+      "key": "y_lag2",
+      "mean_abs_shap_m": 0.4449459910392761
+    },
+    {
+      "feature": "Origin-season climatology",
+      "key": "clim_origin",
+      "mean_abs_shap_m": 0.31865745782852173
+    },
+    {
+      "feature": "Target season",
+      "key": "target_season",
+      "mean_abs_shap_m": 0.2900175154209137
+    },
+    {
+      "feature": "Latitude",
+      "key": "latitude",
+      "mean_abs_shap_m": 0.20477986335754395
+    },
+    {
+      "feature": "Borehole depth",
+      "key": "well_depth_m",
+      "mean_abs_shap_m": 0.18334457278251648
+    },
+    {
+      "feature": "Current anomaly",
+      "key": "anom_t",
+      "mean_abs_shap_m": 0.15282344818115234
+    },
+    {
+      "feature": "Record length",
+      "key": "n_past",
+      "mean_abs_shap_m": 0.14432519674301147
+    },
+    {
+      "feature": "Depth 3 campaigns ago",
+      "key": "y_lag3",
+      "mean_abs_shap_m": 0.13670291006565094
+    },
+    {
+      "feature": "Depth 1 campaign ago",
+      "key": "y_lag1",
+      "mean_abs_shap_m": 0.12477999180555344
+    },
+    {
+      "feature": "Depth 1 year ago",
+      "key": "y_lag4",
+      "mean_abs_shap_m": 0.07966435700654984
+    },
+    {
+      "feature": "Longitude",
+      "key": "longitude",
+      "mean_abs_shap_m": 0.07073478400707245
+    },
+    {
+      "feature": "Change over past year",
+      "key": "d4",
+      "mean_abs_shap_m": 0.0572219043970108
+    }
+  ],
+  "4": [
+    {
+      "feature": "Current anomaly",
+      "key": "anom_t",
+      "mean_abs_shap_m": 0.7355088591575623
+    },
+    {
+      "feature": "Current depth",
+      "key": "y_t",
+      "mean_abs_shap_m": 0.5681888461112976
+    },
+    {
+      "feature": "Borehole depth",
+      "key": "well_depth_m",
+      "mean_abs_shap_m": 0.2680709660053253
+    },
+    {
+      "feature": "Target-season climatology",
+      "key": "clim_target",
+      "mean_abs_shap_m": 0.23158049583435059
+    },
+    {
+      "feature": "Record length",
+      "key": "n_past",
+      "mean_abs_shap_m": 0.16834460198879242
+    },
+    {
+      "feature": "Change since last campaign",
+      "key": "d1",
+      "mean_abs_shap_m": 0.1535511016845703
+    },
+    {
+      "feature": "Latitude",
+      "key": "latitude",
+      "mean_abs_shap_m": 0.15342922508716583
+    },
+    {
+      "feature": "Change over past year",
+      "key": "d4",
+      "mean_abs_shap_m": 0.14112544059753418
+    },
+    {
+      "feature": "Depth 3 campaigns ago",
+      "key": "y_lag3",
+      "mean_abs_shap_m": 0.11545709520578384
+    },
+    {
+      "feature": "Depth 2 campaigns ago",
+      "key": "y_lag2",
+      "mean_abs_shap_m": 0.10978337377309799
+    },
+    {
+      "feature": "Depth 1 year ago",
+      "key": "y_lag4",
+      "mean_abs_shap_m": 0.10302112996578217
+    },
+    {
+      "feature": "Longitude",
+      "key": "longitude",
+      "mean_abs_shap_m": 0.09732150286436081
+    },
+    {
+      "feature": "Depth 1 campaign ago",
+      "key": "y_lag1",
+      "mean_abs_shap_m": 0.08092284202575684
+    },
+    {
+      "feature": "Origin season",
+      "key": "origin_season",
+      "mean_abs_shap_m": 0.07156192511320114
+    },
+    {
+      "feature": "Origin-season climatology",
+      "key": "clim_origin",
+      "mean_abs_shap_m": 0.04963212460279465
+    },
+    {
+      "feature": "Target season",
+      "key": "target_season",
+      "mean_abs_shap_m": 0.013830653391778469
+    }
+  ]
+}

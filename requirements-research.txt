@@ -1,0 +1,13 @@
+# Research pipeline (src/research/), pinned from the `anpr` conda env (Python 3.12.13).
+#   conda activate anpr && pip install -r requirements-research.txt
+# The legacy Phase 1–5 pipeline keeps its own requirements.txt.
+numpy==2.4.3
+pandas==2.3.3
+pyarrow==23.0.1
+scipy==1.17.1
+scikit-learn==1.8.0
+xgboost==3.4.1
+xarray==2026.9.0
+imdlib==0.4.0
+matplotlib==3.10.8
+pytest==9.1.1
