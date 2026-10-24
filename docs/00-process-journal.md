@@ -1,0 +1,166 @@
+# 00 — Process Journal
+
+The complete, chronological record of this research project: every request, what was done,
+what was found, what was decided and why, and where the results live. **This is the running
+record.** A new entry is added at the end of every step, before the step's commit.
+
+Each entry follows the same shape: **Request → Work → Findings → Decisions → Artefacts / commits.**
+
+Conventions: all Python runs in `conda activate anpr`. Commits carry no AI co-author trailers.
+Research work lives on branch `research/p1`.
+
+---
+
+## Stage 1 — Project review and first literature survey (2026-10-24, morning)
+
+**Request.** "Review the project, do a literature survey and check if we are filling the right
+gap; if you find other gaps, tell me."
+
+**Work.**
+- Read the legacy pipeline (`src/data`, `src/models`, `src/explainability`, `src/optimization`),
+  the FastAPI backend and the README.
+- Profiled the raw CGWB file (416 952 rows, 6 440 stations, 1994–2025) and the processed
+  `feature_matrix`.
+- Searched the literature (web search; OpenAlex).
+
+**Findings.**
+- **The legacy model never forecast groundwater.** The preprocessing keyword-matched `wellDepth`
+  (the static borehole depth) as the target and fabricated monthly timestamps. Copying the
+  previous value scored RMSE 0.0000 on the legacy test split, so the reported R² 0.9998, the
+  SHAP/VSN rankings and the GA/PSO "policy" outputs were all invalid.
+- Other defects: rainfall/temperature dropped; static soil/aquifer features were placeholder
+  constants; the "TFT" ran on sequences of length 1; `train.py` could not run; dashboard numbers
+  were hard-coded. Full list: [01-project-audit.md](01-project-audit.md).
+- Literature: India-wide deep learning already existed (Malakar et al. 2021); TFT was not
+  state of the art for groundwater (below N-HiTS in German studies); GA/PSO surrogate optimisation
+  was mature. The claimed contribution was an integration, not a methods gap.
+
+**Decisions.** Fix the target before judging any gap. Proposed alternative gaps: an honest Indian
+benchmark, mixed-frequency (telemetry + manual) modelling, calibrated uncertainty, energy as a
+pumping proxy, groundwater-drought early warning, joint level–quality modelling.
+
+**Artefacts.** Report delivered in chat (later turned into docs 01–03). No commits.
+
+---
+
+## Stage 2 — Novelty search, documentation, corrected pipeline, dashboard rebuild (2026-10-24)
+
+**Request.** Remove Claude from GitHub co-authors; find the best publishable gaps (also outside the
+current project); review ten supplied papers; document the whole project; install needed skills
+and MCPs; change the frontend for the final outcome, including visual changes.
+
+**Work.**
+1. *Co-author check.* The only commit (`9f586d4`) had a single author and no co-author trailer, so
+   nothing had to be removed. Saved a standing rule: no attribution trailers on commits or PRs.
+2. *Ten supplied papers.* Pulled their abstracts from OpenAlex and tabulated what each leaves open
+   ([02 §A](02-literature-review.md)): 9/10 used ≤ 48 wells, random or single splits, no naive
+   baseline, no calibrated intervals, no decision value.
+3. *Wider search.* OpenAlex title/abstract searches for foundation models, conformal prediction,
+   ENSO/IOD + Indian groundwater, cost–loss value, AlphaEarth, KAN/Mamba, mixed frequency.
+4. *Data facts.* Established the two sign conventions (manual positive, DWLR negative), the
+   quarterly CGWB campaign months, and that the file's rainfall is a single-day snapshot
+   (median 3.4 mm per well-year).
+5. *Corrected pipeline.* `src/research/ingest.py` (real target and dates, sign harmonisation,
+   outlier QC, campaign grid) and `src/research/benchmark.py` (time-blocked split, naive baselines,
+   memory-only XGBoost, five interval methods, exceedance warnings, SHAP, trends, dashboard export).
+6. *Dashboard.* Replaced the marketing demo with a research dashboard: hero hydrograph below a
+   ground line, national well map (warning / trend / network layers), single-well explorer, evidence
+   charts, research agenda. New visual system (Archivo, chalk/slate/soil palette, validated chart
+   colours, light + dark). Fixed the broken production build. QA'd in headless Chromium at desktop,
+   dark and 390 px.
+7. *Tools.* No new MCP was needed (OpenAlex/GitHub APIs reached directly). The Playwright MCP needs
+   system Chrome, so Playwright's own Chromium was installed under `~/.cache/ms-playwright`.
+
+**Findings.**
+- **A 2026 benchmark on the same Kaggle file already exists** (Alphoenixx, Zenodo, July 2026):
+  RF/XGBoost/LSTM/GRU/Chronos-2, conformal, spatial CV. A generic benchmark paper was no longer novel.
+  Its climate ablation summed the snapshot rainfall, so its "climate adds ~0 %" null was untested.
+- **Pilot results** (memory-only XGBoost, test 2019–2025): skill vs persistence +0.52 / +0.54 / +0.14
+  at 3 / 6 / 12 months. One global conformal interval covered 88 % of readings in wells < 5 m but
+  only 44 % in wells ≥ 40 m; Mondrian (season × depth) conformal fixed most of that.
+- Kim et al. 2026 (Korean wells): known future weather is the main short-horizon skill source.
+- No groundwater-level conformal paper, no cost–loss study, no ENSO/IOD study for India was found.
+
+**Decisions.**
+- **Paper P1:** *Monsoon forcing, depth-aware calibration and decision value in national-scale
+  groundwater forecasting for India* — gaps G1 (forcing), G2 (calibration), G3 (decision value).
+  Follow-ups: telemetry + manual fusion, AlphaEarth for unseen wells, level + quality, energy as
+  pumping proxy. Full ranking: [03-research-gaps.md](03-research-gaps.md).
+- GA/PSO pumping optimisation dropped from the narrative until a real abstraction proxy exists.
+- Dashboard says "forecast after the last reading", because most manual records end in 2022–2023.
+
+**Artefacts.** docs 01–05, data card, `references.bib`; `src/research/{ingest,benchmark}.py`;
+`frontend/` rebuild. Committed later in Stage 3 (`b802160`, `5730584`, `784c617`).
+
+---
+
+## Stage 3 — Phase plan, Phase 0 (foundations) and Phase 1 (forcing data) (2026-10-24)
+
+**Request.** "Create a precise plan of phases with steps; start Phase 0 and 1 immediately."
+Mid-way: "make sure to use conda activate anpr". Afterwards: "commit each phase or internal
+changes if necessary".
+
+**Work.**
+- *Plan:* [06-phase-plan.md](06-phase-plan.md) — Phases 0–6 with steps, deliverables, exit checks.
+- *Phase 0:* `src/research/config.py` (all split years, horizons, paths, seeds); pinned
+  `requirements-research.txt` from `anpr`; unit tests (`tests/research/`); `.gitignore` and removal of
+  21 committed `.pyc` files; [data-card.md](data-card.md); `scripts/reproduce.sh`.
+- *Phase 1:* installed `imdlib`; downloaded IMD rainfall (0.25°) and Tmax/Tmin (1°) for 1990–2025
+  (36/36 years each) and NOAA Niño 3.4 + DMI; built `forcing_features.parquet` (past rain windows,
+  last monsoon, SPI-3/6/12, temperature anomaly, ENSO/IOD lags, oracle arm, snapshot control).
+
+**Findings.**
+- The new unit tests caught two of my own bugs: the conformal quantile was one rank too
+  conservative, and depth classes were right-closed (a 5.0 m well fell in "< 5 m"). Fixed; point
+  metrics unchanged, coverage moved ≤ 2 points (Mondrian ≥ 40 m: 77 % → 75 %).
+- The NOAA index URL had moved (404); switched to the PSL `/data/timeseries/` path.
+- IMD rain grid contains 839 zero-rain cell-years: 362 isolated ones repaired from neighbours,
+  477 in blocks (NW Rajasthan 1998–2002, Kutch 2012) set to missing.
+- Sanity checks passed: monsoon departures match IMD's reported sign in 10/10 years; monsoon rain
+  correlates with May → Nov recharge at 78 % of wells; snapshot rainfall is 3.6 mm vs 1 004 mm real.
+  Details: [07-forcing-data.md](07-forcing-data.md).
+
+**Decisions.** Normals for SPI/ratios fitted on ≤ 2015 only (like a scaler fitted on training data);
+leakage unit tests enforce that past features never see the future.
+
+**Commits.** `1c4f7aa` gitignore · `b802160` pipeline + Phase 0 · `5730584` docs · `784c617`
+dashboard · `9468507` Phase 1.
+
+---
+
+## Stage 4 — Phase 2: skill decomposition, RQ1 (2026-10-24)
+
+**Request.** "Move on to phase 2" (later: "continue").
+
+**Work.**
+- `src/research/skill_decomposition.py`: nested XGBoost arms on identical rows — M0 memory,
+  M1 + past forcing, M2 + ENSO/IOD, M3 + oracle future rain, C snapshot control — each tuned on
+  2013–2015; well-clustered bootstrap CIs; Diebold–Mariano; stratification by depth, region,
+  record length, season; grouped SHAP. `src/research/regions.py` for coarse regions.
+- `src/research/reference_models.py`: Random Forest and Chronos-2 zero-shot (with past rain and
+  oracle future rain as covariates) on the GPU. Installed `chronos-forecasting` 2.3.2.
+- `src/research/skill_robustness.py`: alternative split (train ≤ 2017) and 2° spatially blocked CV.
+- `src/research/skill_figures.py`: three figures in `reports/skill/`.
+
+**Findings.**
+- About 30 readings per horizon (0.1 %) are datum jumps carrying 15 % of squared error; they made
+  the squared-error DM test meaningless. Added absolute-loss DM, a campaign sign test, MAE CIs and
+  a no-jump sensitivity run; kept the jumps in every headline number.
+- **RQ1 answer:** memory carries most skill; observed forcing + ENSO/IOD adds a small, robust gain
+  (positive in all 9 horizon × setting combinations; best at 6 months, +5.0 % MSE, 22/24 campaigns);
+  a perfect rainfall forecast would add 2.5–9.6 % more; snapshot rainfall adds nothing. Gains
+  concentrate in the monsoon-spanning May → November forecast and in wells < 15 m.
+- Chronos-2 zero-shot trails the trained models; Random Forest ≈ XGBoost.
+- `scripts/reproduce.sh` ran ingest after forcing features, which fails on a fresh clone. Fixed.
+
+**Decisions.** Primary evidence = campaign sign test + MAE CIs. N-HiTS and CHIRPS deferred
+(reasons in [08 §4–5](08-skill-decomposition.md)).
+
+**Commits.** `c38d6b6` · `50976cd` · `edd9db5`.
+
+---
+
+## Stage 5 — Phase 3: uncertainty calibration, RQ2 (in progress)
+
+**Request.** "Start phase 3; document the whole process, including what you've done since the
+beginning." This journal is the response to the second half; entries below record Phase 3.

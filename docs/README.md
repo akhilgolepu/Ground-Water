@@ -1,15 +1,16 @@
 # AquaSense — Research Documentation
 
 Living documentation for the groundwater-forecasting research project. Update
-[05-worklog.md](05-worklog.md) every working session.
+[00-process-journal.md](00-process-journal.md) at every step.
 
 | Doc | What it holds |
 |---|---|
+| [00-process-journal.md](00-process-journal.md) | **Start here.** Chronological record of every request, step, finding, decision and commit since the first review |
 | [01-project-audit.md](01-project-audit.md) | Verified defects in the legacy Phase 1–5 pipeline and the data facts behind them |
 | [02-literature-review.md](02-literature-review.md) | The 10 supplied papers + positioning literature, with what each leaves open |
 | [03-research-gaps.md](03-research-gaps.md) | Ranked gaps, recommended paper (P1), follow-ups, ideas beyond the project |
 | [04-methodology-and-pilot-results.md](04-methodology-and-pilot-results.md) | Corrected pipeline, benchmark design, pilot numbers, next experiments |
-| [05-worklog.md](05-worklog.md) | Dated log of work and decisions |
+| [05-worklog.md](05-worklog.md) | Original short log of Stages 2–4 (frozen; see 00) |
 | [06-phase-plan.md](06-phase-plan.md) | Phases 0–6 with steps, deliverables and exit checks |
 | [07-forcing-data.md](07-forcing-data.md) | IMD rainfall/temperature and ENSO/IOD forcing: sources, processing, sanity checks |
 | [08-skill-decomposition.md](08-skill-decomposition.md) | Phase 2: does monsoon forcing add skill? Arms M0–M3, reference models, robustness, answer to RQ1 |
@@ -23,7 +24,7 @@ Living documentation for the groundwater-forecasting research project. Update
 - Phase 0 (foundations) — **done**: config, pinned env, 25 unit tests, `scripts/reproduce.sh`.
 - Phase 1 (forcing data) — **done**: IMD 1990–2025 + Niño 3.4/DMI → `forcing_features.parquet`; all sanity checks pass.
 - Phase 2 (skill decomposition) — **done**: forcing adds a small robust gain (best +5 % MSE at 6 months); oracle headroom 2.5–9.6 %. See [08](08-skill-decomposition.md).
-- Phase 3 (uncertainty calibration) — **next**.
+- Phase 3 (uncertainty calibration) — **in progress**.
 - Dashboard — `frontend/` — reads `frontend/public/data/*.json` produced by the benchmark.
 
 ## Reproduce

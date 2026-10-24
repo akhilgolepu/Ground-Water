@@ -1,6 +1,7 @@
 # 05 — Worklog
 
-Running record of what was done, what was found and what was decided. Newest first.
+> **Frozen.** Superseded by [00-process-journal.md](00-process-journal.md), the single running record
+> from Stage 5 (Phase 3) onward. This short log is kept unchanged as the original record of Stages 2–4.
 
 ## 2026-10-24 (evening) — Phase 2 complete: skill decomposition (RQ1)
 
