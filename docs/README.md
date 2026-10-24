@@ -16,6 +16,8 @@ Living documentation for the groundwater-forecasting research project. Update
 | [08-skill-decomposition.md](08-skill-decomposition.md) | Phase 2: does monsoon forcing add skill? Arms M0–M3, reference models, robustness, answer to RQ1 |
 | [09-uncertainty-calibration.md](09-uncertainty-calibration.md) | Phase 3: interval methods, conditional coverage by depth/region/season, drift, answer to RQ2 |
 | [10-decision-value.md](10-decision-value.md) | Phase 4: warning events, probability calibration, economic value, trigger rule, 2023–24 case study, answer to RQ3 |
+| [11-dashboard.md](11-dashboard.md) | Phase 5: dashboard export, views, traceability checks, India-WRIS refresh |
+| [12-internal-review.md](12-internal-review.md) | Phase 6.5: pre-submission review of leakage, baselines, uncertainty and claims |
 | [data-card.md](data-card.md) | Provenance, fields, sign conventions and defects of the CGWB source file |
 | [references.bib](references.bib) | BibTeX for everything cited |
 
@@ -28,7 +30,8 @@ Living documentation for the groundwater-forecasting research project. Update
 - Phase 2 (skill decomposition) — **done**: forcing adds a small robust gain (best +5 % MSE at 6 months); oracle headroom 2.5–9.6 %. See [08](08-skill-decomposition.md).
 - Phase 3 (uncertainty calibration) — **done**: rolling recalibration + ACI keeps every depth and region class within ~3 points; drift traced to the 2019–22 strong monsoons. See [09](09-uncertainty-calibration.md).
 - Phase 4 (decision value) — **done**: warnings worth acting on (peak V 0.43 at 3 months; 0.69 for the suction-limit event) once probabilities are recalibrated on a rolling window; trigger = p ≥ C/L. See [10](10-decision-value.md).
-- Phase 5 (dashboard integration) — **next**.
+- Phase 5 (dashboard integration) — **done**: static dashboard of RQ1–RQ3 and operational forecasts; every number traced to `reports/`; India-WRIS refresh piloted for Rajasthan. See [11](11-dashboard.md).
+- Phase 6 (manuscript and release) — **done except author actions**: draft `paper/main.pdf`, internal review ([12](12-internal-review.md)), release candidate `v1.0.0-rc1`; licence, authorship, push, DOI, preprint and submission wait on the author (`paper/submission/checklist.md`).
 - Dashboard — `frontend/` — reads `frontend/public/data/*.json` produced by the benchmark.
 
 ## Reproduce

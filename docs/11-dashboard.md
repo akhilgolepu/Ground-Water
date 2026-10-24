@@ -63,7 +63,21 @@ India-WRIS has no documented API. `src/research/wris_refresh.py` uses the endpoi
 - Districts appear under two spellings (e.g. "Ambala" and "AMBALA") and both are fetched.
 - Only some manual station codes match the research snapshot's well IDs (13 of 37 in an Ajmer probe, 0 of 58 in Karnal); unmatched stations are kept in the file but not used for forecasts.
 
-PILOT_RESULTS
+**Rajasthan pilot (2026-10-24, readings from 2023-01-01; `reports/wris_refresh.json`).**
+
+| | |
+|---|---|
+| District names fetched | 65 (33 districts, most under two spellings), 0 failures, about 1 hour |
+| Manual readings (after de-duplication) | 3 187 at 876 stations |
+| Stations matching the research snapshot | 219 |
+| Readings by month | Jan, May, Aug, Nov 2023 ≈ 600 each; Jan 2024: 600; Aug 2024: 21 |
+| Wells extended in the dashboard | 128 wells, 345 new campaigns; latest campaign January 2024 |
+| Operational forecasts | 4 425 → 4 453 wells |
+
+The portal's manual record for Rajasthan effectively ends at the January 2024 campaign, so the refresh
+moves 128 wells forward by up to a year but cannot make the dashboard current to 2026. The other 91
+matching stations had no readings newer than the snapshot. Unmatched stations (657) are kept in the
+updates file for a future re-ingestion. Extended wells show the added readings as open circles.
 
 The refresh only feeds the dashboard's operational forecasts. The research results (Phases 0–4, the
 paper) use the frozen snapshot and are unaffected. **Scheduling:** run the refresh and the export

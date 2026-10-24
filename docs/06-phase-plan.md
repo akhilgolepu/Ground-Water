@@ -15,8 +15,8 @@ check passes and [00-process-journal.md](00-process-journal.md) records it. All 
 | 2 | Skill decomposition experiments ✅ 2026-10-24 | RQ1 | 1 |
 | 3 | Uncertainty calibration ✅ 2026-10-24 | RQ2 | 2 |
 | 4 | Decision value of warnings ✅ 2026-10-24 | RQ3 | 3 |
-| 5 | Dashboard integration | — | 2–4 |
-| 6 | Manuscript and release | — | 2–5 |
+| 5 | Dashboard integration ✅ 2026-10-24 | — | 2–4 |
+| 6 | Manuscript and release ◐ author actions open | — | 2–5 |
 
 ---
 
@@ -89,7 +89,7 @@ RQ1 that holds under the robustness checks.
 
 **Exit check:** value curves with CIs for each arm; a stated trigger recommendation with its expected hit and false-alarm rates.
 
-## Phase 5 — Dashboard integration
+## Phase 5 — Dashboard integration — ✅ done (see 11)
 
 | Step | Action |
 |---|---|
@@ -101,7 +101,7 @@ RQ1 that holds under the robustness checks.
 
 **Exit check:** visual QA in light/dark/mobile with no console errors; every number on screen traceable to a file in `reports/`.
 
-## Phase 6 — Manuscript and release
+## Phase 6 — Manuscript and release — ◐ done except author actions (see 12 and paper/submission/checklist.md)
 
 | Step | Action |
 |---|---|

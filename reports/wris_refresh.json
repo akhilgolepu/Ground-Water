@@ -1,0 +1,347 @@
+{
+  "summary": {
+    "run_date": "2026-10-24",
+    "states": [
+      "Rajasthan"
+    ],
+    "since": "2023-01-01",
+    "until": "2026-10-24",
+    "districts": 65,
+    "failed": 0,
+    "manual_readings": 3187,
+    "stations": 876,
+    "stations_matching_snapshot": 219,
+    "latest_reading": "2024-08-30",
+    "readings_by_year": {
+      "2023": 2566,
+      "2024": 621
+    }
+  },
+  "districts": [
+    {
+      "state": "Rajasthan",
+      "district": "AJMER",
+      "manual_rows": 156
+    },
+    {
+      "state": "Rajasthan",
+      "district": "ALWAR",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Ajmer",
+      "manual_rows": 156
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Alwar",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "BANSWARA",
+      "manual_rows": 133
+    },
+    {
+      "state": "Rajasthan",
+      "district": "BARAN",
+      "manual_rows": 81
+    },
+    {
+      "state": "Rajasthan",
+      "district": "BARMER",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "BHARATPUR",
+      "manual_rows": 244
+    },
+    {
+      "state": "Rajasthan",
+      "district": "BHILWARA",
+      "manual_rows": 421
+    },
+    {
+      "state": "Rajasthan",
+      "district": "BIKANER",
+      "manual_rows": 169
+    },
+    {
+      "state": "Rajasthan",
+      "district": "BUNDI",
+      "manual_rows": 57
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Banswara",
+      "manual_rows": 133
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Baran",
+      "manual_rows": 81
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Barmer",
+      "manual_rows": 243
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Bharatpur",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Bhilwara",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Bikaner",
+      "manual_rows": 169
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Bundi",
+      "manual_rows": 57
+    },
+    {
+      "state": "Rajasthan",
+      "district": "CHITTORGARH",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "CHURU",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Chittorgarh",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Churu",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "DAUSA",
+      "manual_rows": 84
+    },
+    {
+      "state": "Rajasthan",
+      "district": "DHOLPUR",
+      "manual_rows": 57
+    },
+    {
+      "state": "Rajasthan",
+      "district": "DUNGARPUR",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Dausa",
+      "manual_rows": 72
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Dholpur",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Dungarpur",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "GANGANAGAR",
+      "manual_rows": 176
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Ganganagar",
+      "manual_rows": 176
+    },
+    {
+      "state": "Rajasthan",
+      "district": "HANUMANGARH",
+      "manual_rows": 150
+    },
+    {
+      "state": "Rajasthan",
+      "district": "JAIPUR",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "JAISALMER",
+      "manual_rows": 425
+    },
+    {
+      "state": "Rajasthan",
+      "district": "JALORE",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "JHALAWAR",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "JHUNJHUNU",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "JODHPUR",
+      "manual_rows": 265
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Jaipur",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Jaisalmer",
+      "manual_rows": 331
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Jalore",
+      "manual_rows": 154
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Jhalawar",
+      "manual_rows": 124
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Jhunjhunun",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Jodhpur",
+      "manual_rows": 29
+    },
+    {
+      "state": "Rajasthan",
+      "district": "KARAULI",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "KOTA",
+      "manual_rows": 81
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Karauli",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Kota",
+      "manual_rows": 81
+    },
+    {
+      "state": "Rajasthan",
+      "district": "NAGAUR",
+      "manual_rows": 93
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Nagaur",
+      "manual_rows": 93
+    },
+    {
+      "state": "Rajasthan",
+      "district": "PALI",
+      "manual_rows": 108
+    },
+    {
+      "state": "Rajasthan",
+      "district": "PRATAPGARH",
+      "manual_rows": 32
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Pali",
+      "manual_rows": 108
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Pratapgarh",
+      "manual_rows": 32
+    },
+    {
+      "state": "Rajasthan",
+      "district": "RAJSAMAND",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Rajsamand",
+      "manual_rows": 0
+    },
+    {
+      "state": "Rajasthan",
+      "district": "SAWAI MADHOPUR",
+      "manual_rows": 87
+    },
+    {
+      "state": "Rajasthan",
+      "district": "SIKAR",
+      "manual_rows": 133
+    },
+    {
+      "state": "Rajasthan",
+      "district": "SIROHI",
+      "manual_rows": 73
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Sawai Madhopur",
+      "manual_rows": 87
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Sikar",
+      "manual_rows": 133
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Sirohi",
+      "manual_rows": 126
+    },
+    {
+      "state": "Rajasthan",
+      "district": "TONK",
+      "manual_rows": 83
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Tonk",
+      "manual_rows": 83
+    },
+    {
+      "state": "Rajasthan",
+      "district": "UDAIPUR",
+      "manual_rows": 184
+    },
+    {
+      "state": "Rajasthan",
+      "district": "Udaipur",
+      "manual_rows": 184
+    }
+  ]
+}

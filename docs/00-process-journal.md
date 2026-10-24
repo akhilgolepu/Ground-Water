@@ -264,7 +264,10 @@ paired differences, triggers, case study, advisories, three figures); `scripts/r
 1. *India-WRIS (5.4).* Found no documented API. Reverse-engineered the portal's endpoints from the open
    QGIS plugin; documented quirks (406 = no rows, no mode filter, shifted CSV header, duplicate district
    spellings). Wrote `src/research/wris_refresh.py` (paced, cached, writes a separate updates file that never
-   touches the research snapshot). A Rajasthan pilot was run (results in docs/11).
+   touches the research snapshot). Rajasthan pilot: 65 district names, 0 failures, 3 187 manual readings at
+   876 stations (219 matching the snapshot); 128 wells extended by 345 campaigns up to January 2024. The
+   portal's manual record ends there (21 readings in August 2024), so the refresh cannot make the dashboard
+   current to 2026. Details in docs/11.
 2. *Export (5.1).* `src/research/export_dashboard.py` writes summary, stations, 64 per-well bucket files and
    skill / calibration / decision payloads, each naming its source report. Operational forecasts refit M0 and
    M2 with the tuned settings and abort if they differ from the Phase 2 test predictions by more than 1 mm.
@@ -284,7 +287,8 @@ paired differences, triggers, case study, advisories, three figures); `scripts/r
 Visual QA in light, dark and 390 px on the dev server and on the static production build: no console errors,
 no overflow.
 
-**Commits.** `5cee084` groundwork · `85a3a80` export · `7362d36` dashboard · `b085d38` legacy retired.
+**Commits.** `5cee084` groundwork · `85a3a80` export · `7362d36` dashboard · `b085d38` legacy retired ·
+India-WRIS refresh and re-export committed with the release tag.
 
 ---
 
