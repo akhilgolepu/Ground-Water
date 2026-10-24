@@ -1,0 +1,136 @@
+h,method,crps,group_var,group
+1,Gaussian,1.2135265314949617,,
+1,Gaussian,2.4714814878172175,depth_name,15–40 m
+1,Gaussian,1.3087066305740873,depth_name,5–15 m
+1,Gaussian,0.9166558158941297,depth_name,< 5 m
+1,Gaussian,3.932845220462655,depth_name,≥ 40 m
+1,Gaussian,1.9767352030395826,region,Arid north-west
+1,Gaussian,0.8808516702050797,region,Himalaya & north-east
+1,Gaussian,1.1289063800032717,region,Indo-Gangetic plain
+1,Gaussian,1.170588621134649,region,Peninsular
+1,Split conformal,1.1539617723685724,,
+1,Split conformal,2.539838833328829,depth_name,15–40 m
+1,Split conformal,1.2961591050545227,depth_name,5–15 m
+1,Split conformal,0.8060590370943974,depth_name,< 5 m
+1,Split conformal,4.045366441358665,depth_name,≥ 40 m
+1,Split conformal,2.0084803118906023,region,Arid north-west
+1,Split conformal,0.7578354788815781,region,Himalaya & north-east
+1,Split conformal,1.0505569770448675,region,Indo-Gangetic plain
+1,Split conformal,1.110026750861722,region,Peninsular
+1,Mondrian D×S,1.1347607327480442,,
+1,Mondrian D×S,2.454212416795121,depth_name,15–40 m
+1,Mondrian D×S,1.3017375004108056,depth_name,5–15 m
+1,Mondrian D×S,0.7890667397219655,depth_name,< 5 m
+1,Mondrian D×S,3.691415490550931,depth_name,≥ 40 m
+1,Mondrian D×S,1.9752759657145051,region,Arid north-west
+1,Mondrian D×S,0.7337162492966458,region,Himalaya & north-east
+1,Mondrian D×S,1.047492398991485,region,Indo-Gangetic plain
+1,Mondrian D×S,1.0868584946273934,region,Peninsular
+1,Mondrian D×R,1.1267937556711505,,
+1,Mondrian D×R,2.4156987774441783,depth_name,15–40 m
+1,Mondrian D×R,1.2901652233180094,depth_name,5–15 m
+1,Mondrian D×R,0.7864819901760873,depth_name,< 5 m
+1,Mondrian D×R,3.7076873185950108,depth_name,≥ 40 m
+1,Mondrian D×R,1.9240730832717041,region,Arid north-west
+1,Mondrian D×R,0.7217277209495654,region,Himalaya & north-east
+1,Mondrian D×R,1.028348281046528,region,Indo-Gangetic plain
+1,Mondrian D×R,1.0880540667618805,region,Peninsular
+1,Normalised,1.0887469267213576,,
+1,Normalised,2.331770808100232,depth_name,15–40 m
+1,Normalised,1.2466682193475114,depth_name,5–15 m
+1,Normalised,0.762746749085843,depth_name,< 5 m
+1,Normalised,3.4951100620526554,depth_name,≥ 40 m
+1,Normalised,1.84918846262266,region,Arid north-west
+1,Normalised,0.7153339724713532,region,Himalaya & north-east
+1,Normalised,0.9969080567855908,region,Indo-Gangetic plain
+1,Normalised,1.0504944904436102,region,Peninsular
+2,Gaussian,1.3774582616043793,,
+2,Gaussian,2.805552081991435,depth_name,15–40 m
+2,Gaussian,1.4880241932310443,depth_name,5–15 m
+2,Gaussian,1.0363516708019982,depth_name,< 5 m
+2,Gaussian,4.0678363754128615,depth_name,≥ 40 m
+2,Gaussian,2.1885065419791334,region,Arid north-west
+2,Gaussian,0.9160536902564693,region,Himalaya & north-east
+2,Gaussian,1.2976811126659977,region,Indo-Gangetic plain
+2,Gaussian,1.3296313317817618,region,Peninsular
+2,Split conformal,1.3373297830826543,,
+2,Split conformal,2.924220057446456,depth_name,15–40 m
+2,Split conformal,1.508420863374114,depth_name,5–15 m
+2,Split conformal,0.9296102635525362,depth_name,< 5 m
+2,Split conformal,4.17721966207446,depth_name,≥ 40 m
+2,Split conformal,2.2504143144379025,region,Arid north-west
+2,Split conformal,0.7664024756187195,region,Himalaya & north-east
+2,Split conformal,1.2438563960316118,region,Indo-Gangetic plain
+2,Split conformal,1.2868848291397073,region,Peninsular
+2,Mondrian D×S,1.315520100663664,,
+2,Mondrian D×S,2.847432277809906,depth_name,15–40 m
+2,Mondrian D×S,1.4994924575026274,depth_name,5–15 m
+2,Mondrian D×S,0.911067206568465,depth_name,< 5 m
+2,Mondrian D×S,3.988198366935006,depth_name,≥ 40 m
+2,Mondrian D×S,2.242815253950518,region,Arid north-west
+2,Mondrian D×S,0.7415910890395714,region,Himalaya & north-east
+2,Mondrian D×S,1.2553833321792613,region,Indo-Gangetic plain
+2,Mondrian D×S,1.251450719806851,region,Peninsular
+2,Mondrian D×R,1.307133049136869,,
+2,Mondrian D×R,2.784830659135438,depth_name,15–40 m
+2,Mondrian D×R,1.4911976527360664,depth_name,5–15 m
+2,Mondrian D×R,0.9092999869082425,depth_name,< 5 m
+2,Mondrian D×R,3.985298538675893,depth_name,≥ 40 m
+2,Mondrian D×R,2.1461214822154706,region,Arid north-west
+2,Mondrian D×R,0.7117495477462628,region,Himalaya & north-east
+2,Mondrian D×R,1.2360701412521755,region,Indo-Gangetic plain
+2,Mondrian D×R,1.258262837638963,region,Peninsular
+2,Normalised,1.2625506581306698,,
+2,Normalised,2.6791376173808383,depth_name,15–40 m
+2,Normalised,1.4515664507446002,depth_name,5–15 m
+2,Normalised,0.8745010108659003,depth_name,< 5 m
+2,Normalised,3.765296482774806,depth_name,≥ 40 m
+2,Normalised,2.107966619126095,region,Arid north-west
+2,Normalised,0.7054205426408132,region,Himalaya & north-east
+2,Normalised,1.1899020425601075,region,Indo-Gangetic plain
+2,Normalised,1.2119586821991433,region,Peninsular
+4,Gaussian,1.3705365965024872,,
+4,Gaussian,2.8230205945480273,depth_name,15–40 m
+4,Gaussian,1.5068683184062952,depth_name,5–15 m
+4,Gaussian,1.0086831214388738,depth_name,< 5 m
+4,Gaussian,4.437879583285809,depth_name,≥ 40 m
+4,Gaussian,2.160044748951077,region,Arid north-west
+4,Gaussian,0.8706289614957454,region,Himalaya & north-east
+4,Gaussian,1.2748540078811486,region,Indo-Gangetic plain
+4,Gaussian,1.3316619585892142,region,Peninsular
+4,Split conformal,1.3618568112675815,,
+4,Split conformal,2.9319427083769543,depth_name,15–40 m
+4,Split conformal,1.5624243325385394,depth_name,5–15 m
+4,Split conformal,0.9389323833996025,depth_name,< 5 m
+4,Split conformal,4.505312778768747,depth_name,≥ 40 m
+4,Split conformal,2.2620335087505037,region,Arid north-west
+4,Split conformal,0.7371120635885525,region,Himalaya & north-east
+4,Split conformal,1.2572800382236267,region,Indo-Gangetic plain
+4,Split conformal,1.318030960357781,region,Peninsular
+4,Mondrian D×S,1.3254103177275802,,
+4,Mondrian D×S,2.883421621700377,depth_name,15–40 m
+4,Mondrian D×S,1.5515624067952978,depth_name,5–15 m
+4,Mondrian D×S,0.890988493214525,depth_name,< 5 m
+4,Mondrian D×S,4.306423621825542,depth_name,≥ 40 m
+4,Mondrian D×S,2.245863715653574,region,Arid north-west
+4,Mondrian D×S,0.6862354017236193,region,Himalaya & north-east
+4,Mondrian D×S,1.2432293569521498,region,Indo-Gangetic plain
+4,Mondrian D×S,1.2715348384987528,region,Peninsular
+4,Mondrian D×R,1.327454204035418,,
+4,Mondrian D×R,2.8426120528590215,depth_name,15–40 m
+4,Mondrian D×R,1.5637780757364617,depth_name,5–15 m
+4,Mondrian D×R,0.8924620848689473,depth_name,< 5 m
+4,Mondrian D×R,4.268177008600836,depth_name,≥ 40 m
+4,Mondrian D×R,2.1092778732034443,region,Arid north-west
+4,Mondrian D×R,0.6441026958636392,region,Himalaya & north-east
+4,Mondrian D×R,1.2621658641610867,region,Indo-Gangetic plain
+4,Mondrian D×R,1.285563214383741,region,Peninsular
+4,Normalised,1.2814970890989335,,
+4,Normalised,2.7040465072927518,depth_name,15–40 m
+4,Normalised,1.5085675256615292,depth_name,5–15 m
+4,Normalised,0.8731364168408151,depth_name,< 5 m
+4,Normalised,3.9164519038871735,depth_name,≥ 40 m
+4,Normalised,2.121497098314544,region,Arid north-west
+4,Normalised,0.6492186644021998,region,Himalaya & north-east
+4,Normalised,1.201012630875312,region,Indo-Gangetic plain
+4,Normalised,1.236269552883113,region,Peninsular
