@@ -5,17 +5,20 @@
 #   bash scripts/reproduce.sh --forcing --phase2 # also the skill decomposition, reference models,
 #                                                #   robustness and figures (Phase 2, ~45 min, GPU for Chronos-2)
 #   … --phase3                                   # also uncertainty calibration and figures (Phase 3, needs Phase 2)
+#   … --phase4                                   # also decision value and figures (Phase 4, needs Phases 2–3)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 FORCING=0
 PHASE2=0
 PHASE3=0
+PHASE4=0
 for arg in "$@"; do
   case "$arg" in
     --forcing) FORCING=1 ;;
     --phase2) PHASE2=1 ;;
     --phase3) PHASE3=1 ;;
+    --phase4) PHASE4=1 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
@@ -68,6 +71,19 @@ a = c[c["group_var"].isin(["Depth", "Region"]) & c["nominal"].isin([0.8, 0.9])
 worst = (a["coverage"] - a["nominal"]).abs().max() * 100
 print(f"Check: worst depth/region miss for D×R + recal + ACI = {worst:.2f} points (Phase 3 reference 3.02)")
 assert abs(worst - 3.02) < 0.05, "Phase 3 result changed — investigate before continuing"
+PY
+fi
+
+if [[ $PHASE4 == 1 ]]; then
+  python -m src.research.decision_value
+  python -m src.research.decision_figures
+  python - <<'PY'
+import pandas as pd
+v = pd.read_csv("reports/decision/value_curves.csv")
+r = v[(v["probability"] == "rolling isotonic") & (v["arm"] == "M2 + ENSO/IOD") & (v["event_id"] == "E1")
+      & (v["h"] == 1) & (v["alpha"] == 0.3)].iloc[0]
+print(f"Check: value of E1 warnings at 3 months, C/L = 0.3 = {r['value']:.3f} (Phase 4 reference 0.369)")
+assert abs(r["value"] - 0.369) < 0.002, "Phase 4 result changed — investigate before continuing"
 PY
 fi
 

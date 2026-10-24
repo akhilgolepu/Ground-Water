@@ -77,7 +77,7 @@ RQ1 that holds under the robustness checks.
 
 **Exit check:** a method that keeps every depth and region class within ±3 points of nominal at 80 % and 90 %.
 
-## Phase 4 — Decision value (RQ3)
+## Phase 4 — Decision value (RQ3) — ✅ done (see 10)
 
 | Step | Action |
 |---|---|

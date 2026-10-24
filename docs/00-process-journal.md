@@ -204,7 +204,51 @@ beginning."
 
 ---
 
-## Stage 6 — Phase 4: decision value, RQ3 (next)
+## Stage 6 — Phase 4: decision value, RQ3 (2026-10-24)
 
-Planned: cost–loss relative economic value of the exceedance warnings, using the Phase 3 intervals
-and the Phase 2 oracle arm to value a perfect monsoon forecast.
+**Request.** "Proceed to phase-4".
+
+**Work.**
+1. *Events:* E1 deeper than usual (80th percentile per well and season), E2 groundwater drought
+   (SGI < −1 on Weibull plotting positions), E3 crossing an 8 m pump suction limit. Thresholds from
+   readings up to 2018.
+2. *Probabilities* from the Phase 3 rolling depth × region pools, separately for M0–M3
+   (`src/research/decision_value.py`).
+3. *Scores:* Brier skill vs each well's own climatology, ROC AUC, reliability, Richardson relative
+   economic value over cost–loss ratios 0.02–0.98, trigger tables, paired well-clustered bootstrap
+   for M2 − M0 and M3 − M2.
+4. *Case study:* looked for the official Atal Bhujal district list and found only state-wise counts
+   (80 districts in 7 states). Did not guess district names; tagged wells to states with geoBoundaries
+   ADM1 (`src/research/states.py`; 6 427 / 6 438 wells; names normalised from diacritics) and compared
+   the wet 2022–23 and dry 2023–24 water years.
+5. *Advisory:* template text built only from forecast fields, with a unit test that the numbers match.
+6. *Tests:* 6 new (45 in total).
+
+**Findings.**
+- **Raw probabilities were over-confident** (predicted 0.55 verified 33–41 %), so acting on them lost
+  value above C/L ≈ 0.45. Interval calibration (Phase 3) does not imply probability calibration.
+- A **static isotonic recalibration** fitted on 2016–18 over-corrected on the test years (same drift as
+  Phase 3) and reduced value. A **rolling isotonic recalibration** (8 most recent observed campaigns,
+  window fixed before running) put reliability on the diagonal and raised Brier skill for every arm and
+  horizon. Both recalibrations were added after seeing the raw reliability diagram and are labelled post hoc.
+- **Value is substantial:** peak V 0.43 / 0.32 / 0.27 for E1 and 0.65 / 0.69 / 0.54 for E3 at 3 / 6 / 12 months.
+- **Forcing adds value only at 6 months** (+0.01 to +0.04, CIs exclude 0); a perfect monsoon forecast
+  would add up to +0.13 (CIs exclude 0 in 40 of 45 cells).
+- **2023–24 dry year:** exceedances in Atal Bhujal states rose from 17 % to 25 % while the mean warning
+  probability stayed ~0.17. The forecasts lagged the turn to a dry regime.
+- Corrected four numbers in my own draft of docs/10 after checking them against the CSVs.
+
+**Decisions.** Primary probabilities = rolling isotonic. Trigger rule = warn when p ≥ C/L; defaults 0.3
+for seasonal planning (E1, 3 months: hit rate 58 %, false-alarm ratio 46 %, V 0.37) and 0.2 for pump
+decisions six months ahead (E3: hit rate 76 %, false-alarm ratio 48 %, V 0.58). Twelve-month suction-limit
+warnings are not recommended. The LLM advisory variant is deferred.
+
+**Artefacts.** [10-decision-value.md](10-decision-value.md); `reports/decision/` (scores, value curves,
+paired differences, triggers, case study, advisories, three figures); `scripts/reproduce.sh --phase4`.
+
+---
+
+## Stage 7 — Phase 5: dashboard integration (next)
+
+Planned: export Phases 2–4 results to the dashboard (skill decomposition, calibrated intervals,
+warnings with the trigger rule, advisories), refresh the data from India-WRIS, static deployment.
