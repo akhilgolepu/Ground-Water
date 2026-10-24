@@ -200,6 +200,8 @@ beginning."
 **Artefacts.** [09-uncertainty-calibration.md](09-uncertainty-calibration.md); `reports/calibration/`
 (coverage, CRPS, PIT, γ sweep, four figures); `scripts/reproduce.sh --phase3`.
 
+**Commits.** `146bb42` journal · `64a9eb3` calibration experiment · `97f9c4c` Phase 3 docs and figures.
+
 ---
 
 ## Stage 6 — Phase 4: decision value, RQ3 (next)
