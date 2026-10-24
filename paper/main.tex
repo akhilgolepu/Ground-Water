@@ -166,7 +166,8 @@ below 8\,m, where centrifugal surface pumps lose suction. Thresholds use reading
 is the share of residuals in the online depth $\times$ region pool that would place the forecast beyond the threshold. Because
 interval calibration does not imply calibration at every threshold, we also recalibrate probabilities with isotonic regression
 \citep{zadrozny2002isotonic}, either once on 2016--2018 or on a rolling window of the eight most recent campaigns whose outcomes
-were known at issue time. Probabilities are scored with the Brier skill score \citep{brier1950verification} against each well's
+were known at issue time. Both recalibrations were added after the raw reliability diagram showed over-confidence; the
+window length was fixed before the rolling variant was run, and no test outcome enters a forecast before it was observable. Probabilities are scored with the Brier skill score \citep{brier1950verification} against each well's
 own climatological frequency and with ROC AUC. Decision value is the relative economic value $V$ of \citet{richardson2000value}
 for a user who pays $C$ to protect against a loss $L$ and acts when $p \ge C/L$; $V=1$ is a perfect forecast and $V=0$ is no
 better than always or never acting. Intervals come from a paired well-clustered bootstrap.
@@ -305,8 +306,8 @@ Bhujal scheme was not available to us.
 largest at 6 months, and a perfect monsoon forecast would add \oracleMin--\oracleMax\,\% more. (2) The rainfall field of the
 public compilation is a single-day snapshot and should not be used as forcing. (3) Conformal intervals pooled by depth and region
 and updated online keep every depth and region class within about 3 points of nominal. (4) Warnings are worth acting on once their
-probabilities are recalibrated on recent outcomes; the rule ``warn when $p \ge C/L$'' serves every user, with defaults of 0.3 for
-seasonal planning and 0.2 for pump decisions six months ahead.
+probabilities are recalibrated on recent outcomes; the rule ``warn when $p \ge C/L$'' serves every user and needs no tuning; triggers of 0.3 for
+seasonal planning and 0.2 for pump decisions six months ahead are illustrative, read from the test period.
 
 \section*{Code and data availability}
 Code, processed results, figures and the dashboard are in the project repository (archive and DOI to be added on release). The
