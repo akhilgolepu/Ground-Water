@@ -1,200 +1,290 @@
 import { useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, Eye, HelpCircle } from "lucide-react";
-import type { RiskClass, Station, WellSeries } from "@/lib/research-data";
-import { campaignLong, campaignShort, fmt, int, pct } from "@/lib/research-data";
-import { Hydrograph, HydrographLegend } from "@/components/hydrograph";
-import { RISK_COPY, StationSummary } from "@/components/network-map";
+import { AlertTriangle, CheckCircle2, Search } from "lucide-react";
+import type { HorizonKey, Station, WellForecast } from "@/lib/research-data";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  EVENT_SHORT,
+  HORIZON_KEYS,
+  HORIZON_LABEL,
+  campaignLong,
+  campaignShort,
+  chance,
+  fmt,
+  int,
+  pct,
+  useWellDetail,
+} from "@/lib/research-data";
+import { Hydrograph, HydrographLegend } from "@/components/hydrograph";
+import { StationSummary, type WarningSettings } from "@/components/network-map";
+import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-
-const RISK_STYLE: Record<RiskClass, { icon: typeof AlertTriangle; color: string }> = {
-  Alert: { icon: AlertTriangle, color: "var(--critical)" },
-  Watch: { icon: Eye, color: "var(--warning)" },
-  Normal: { icon: CheckCircle2, color: "var(--good)" },
-  "Insufficient history": { icon: HelpCircle, color: "var(--none)" },
-};
-const RISK_RANK: Record<string, number> = {
-  Alert: 0,
-  Watch: 1,
-  Normal: 2,
-  "Insufficient history": 3,
-};
-
-export function RiskBadge({ risk }: { risk: RiskClass }) {
-  const { icon: Icon, color } = RISK_STYLE[risk];
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-md border border-rule bg-panel px-2 py-0.5 text-[0.875rem] text-ink">
-      <Icon className="h-4 w-4" style={{ color }} aria-hidden />
-      {risk === "Insufficient history" ? "Not enough history" : risk}
-    </span>
-  );
-}
-
-/** Plain-language summary built only from the calibrated outputs. */
-export function forecastBrief(s: Station): string | null {
-  const fc = s.fc;
-  if (!fc) return null;
-  const change = fc.q50 - fc.now;
-  const dir =
-    Math.abs(change) < 0.1
-      ? "about the same as the last reading"
-      : change > 0
-        ? `${fmt(change)} m deeper than the last reading`
-        : `${fmt(-change)} m shallower than the last reading`;
-  let text = `Starting from the last reading in the file (${campaignShort(fc.origin)}), the reading for ${campaignLong(fc.target)} is expected at ${fmt(fc.q50)} m below ground, ${dir}. The 80% range is ${fmt(fc.lo)} to ${fmt(fc.hi)} m; past ranges built this way held about 8 times in 10.`;
-  if (fc.thr != null && fc.p != null) {
-    text += ` There is a ${pct(fc.p)} chance it will be deeper than this well's usual level for the season (${fmt(fc.thr)} m, the 80th percentile of past readings).`;
-  }
-  return text;
-}
 
 interface WellExplorerProps {
   stations: Station[];
-  series: Record<string, WellSeries>;
   selectedId: string | null;
   onSelect: (id: string) => void;
+  warning: WarningSettings;
 }
 
-export function WellExplorer({ stations, series, selectedId, onSelect }: WellExplorerProps) {
-  const [zoom, setZoom] = useState<"data" | "surface">("data");
+export function WellExplorer({ stations, selectedId, onSelect, warning }: WellExplorerProps) {
+  const [query, setQuery] = useState("");
+  const [h, setH] = useState<HorizonKey>("1");
+  const [compare, setCompare] = useState(true);
   const byId = useMemo(() => new Map(stations.map((s) => [s.id, s])), [stations]);
-  const options = useMemo(
-    () =>
-      Object.keys(series)
-        .map((id) => byId.get(id))
-        .filter((s): s is Station => !!s)
-        .sort(
-          (a, b) => (RISK_RANK[a.risk ?? ""] ?? 4) - (RISK_RANK[b.risk ?? ""] ?? 4) || b.n - a.n,
-        ),
-    [series, byId],
-  );
-
   const station = selectedId ? byId.get(selectedId) : undefined;
-  const ws = selectedId ? series[selectedId] : undefined;
-  const brief = station ? forecastBrief(station) : null;
+  const { detail, isLoading, error } = useWellDetail(station);
+  const forecast = detail?.ops?.[h];
+
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (q.length < 2) return [];
+    return stations
+      .filter((s) => s.id.toLowerCase().includes(q) || (s.state ?? "").toLowerCase().includes(q))
+      .sort((a, b) => Number(!!b.ops) - Number(!!a.ops) || b.n - a.n)
+      .slice(0, 8);
+  }, [query, stations]);
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
-          <label htmlFor="well-select" className="text-[0.9375rem] font-medium text-ink">
-            Well
+          <label htmlFor="well-search" className="text-[0.9375rem] font-medium text-ink">
+            Find a well
           </label>
-          <Select value={ws && selectedId ? selectedId : ""} onValueChange={onSelect}>
-            <SelectTrigger
-              id="well-select"
-              className="h-10 w-full border-rule-strong bg-panel text-ink"
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3"
+              aria-hidden
+            />
+            <Input
+              id="well-search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Well ID or state, e.g. Rajasthan"
+              className="h-10 border-rule-strong bg-panel pl-9 text-ink"
+              autoComplete="off"
+            />
+          </div>
+          {matches.length > 0 && (
+            <ul
+              className="divide-y divide-rule rounded-md border border-rule bg-panel"
+              aria-label="Matching wells"
             >
-              <SelectValue
-                placeholder={station ? `Well ${station.id} (map selection)` : "Choose a well"}
-              />
-            </SelectTrigger>
-            <SelectContent className="max-h-[320px]">
-              {options.map((s) => (
-                <SelectItem key={s.id} value={s.id}>
-                  <span className="tnum">{s.id}</span>
-                  <span className="ml-2 text-ink-2">
-                    {s.risk === "Insufficient history"
-                      ? "not enough history"
-                      : s.risk?.toLowerCase()}
-                  </span>
-                </SelectItem>
+              {matches.map((s) => (
+                <li key={s.id}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onSelect(s.id);
+                      setQuery("");
+                    }}
+                    className="flex w-full items-baseline justify-between gap-3 px-3 py-2 text-left text-[0.875rem] hover:bg-sunk"
+                  >
+                    <span className="tnum text-ink">{s.id}</span>
+                    <span className="truncate text-ink-2">
+                      {s.state ?? "unknown state"}
+                      {s.ops ? "" : ", no forecast"}
+                    </span>
+                  </button>
+                </li>
               ))}
-            </SelectContent>
-          </Select>
-          <p className="text-[0.875rem] text-ink-2">
-            {int(options.length)} wells with full histories, chosen to cover the country. Any well
-            on the map can be opened.
-          </p>
+            </ul>
+          )}
+          <p className="text-[0.875rem] text-ink-2">Or click any well on the map above.</p>
         </div>
 
         {station ? (
           <div className="flex flex-col gap-4 border-t border-rule pt-5">
-            {station.fc ? (
-              <div className="flex flex-col gap-2">
-                <div className="text-[0.9375rem] text-ink-2">
-                  Forecast for {campaignLong(station.fc.target)}, made from the{" "}
-                  {campaignShort(station.fc.origin)} reading
-                </div>
-                <div className="type-figure text-[2.6rem] leading-none text-ink">
-                  {fmt(station.fc.q50, 1)}{" "}
-                  <span className="text-[1.1rem] font-medium text-ink-2">m below ground</span>
-                </div>
-                <div className="tnum text-[0.9375rem] text-ink-2">
-                  80% range {fmt(station.fc.lo, 1)}–{fmt(station.fc.hi, 1)} m, last reading{" "}
-                  {fmt(station.fc.now, 1)} m
-                </div>
-                {station.risk && (
-                  <div className="mt-1 flex flex-col gap-1.5">
-                    <RiskBadge risk={station.risk} />
-                    <p className="text-[0.875rem] text-ink-2">{RISK_COPY[station.risk]}</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-[0.9375rem] text-ink-2">
-                No forecast for this well. Forecasts are made for manual wells with a reading in
-                2022 or later; telemetry wells join the model in a later phase.
-              </p>
-            )}
-            {brief && (
-              <p className="max-w-[60ch] text-[0.9375rem] leading-relaxed text-ink">{brief}</p>
-            )}
             <div className="text-[0.875rem]">
               <StationSummary s={station} />
               <div className="tnum mt-0.5 text-ink-2">
                 {fmt(station.lat, 3)}° N, {fmt(station.lon, 3)}° E
+                {station.region ? `, ${station.region}` : ""}
               </div>
             </div>
+            {detail?.ops ? (
+              <>
+                <ToggleGroup
+                  type="single"
+                  value={h}
+                  onValueChange={(v) => v && setH(v as HorizonKey)}
+                  className="w-full rounded-md border border-rule"
+                  aria-label="Forecast horizon"
+                >
+                  {HORIZON_KEYS.map((k) => (
+                    <ToggleGroupItem
+                      key={k}
+                      value={k}
+                      className="flex-1 text-[0.875rem]"
+                      disabled={!detail.ops?.[k]}
+                    >
+                      {HORIZON_LABEL[k]}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+                {forecast && <ForecastCard f={forecast} warning={warning} />}
+              </>
+            ) : (
+              !isLoading && (
+                <p className="text-[0.9375rem] text-ink-2">
+                  No forecast for this well: its last manual reading is before 2019, or it is a
+                  telemetry well. Telemetry wells are not in the model yet.
+                </p>
+              )
+            )}
+            {detail?.mae && <RainfallEffect mae={detail.mae} />}
           </div>
         ) : (
           <p className="text-[0.9375rem] text-ink-2">
-            Choose a well from the list or click one on the map.
+            Choose a well to see its readings and forecasts.
           </p>
         )}
       </div>
 
       <div className="flex min-w-0 flex-col gap-3">
-        {ws ? (
+        {error ? (
+          <p role="alert" className="text-ink">
+            {(error as Error).message}
+          </p>
+        ) : detail ? (
           <>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <HydrographLegend withNext={!!station?.fc} />
-              <ToggleGroup
-                type="single"
-                value={zoom}
-                onValueChange={(v) => v && setZoom(v as "data" | "surface")}
-                className="rounded-md border border-rule"
-                aria-label="Depth axis range"
-              >
-                <ToggleGroupItem value="data" className="px-3 text-[0.875rem]">
-                  Fit to data
-                </ToggleGroupItem>
-                <ToggleGroupItem value="surface" className="px-3 text-[0.875rem]">
-                  From ground surface
-                </ToggleGroupItem>
-              </ToggleGroup>
+              <HydrographLegend
+                withNext={!!forecast}
+                showMemoryOnly={compare}
+                thresholdSeason={
+                  forecast?.thrE1 != null ? forecast.target.split("-")[1] : undefined
+                }
+              />
+              <label className="flex items-center gap-2 text-[0.875rem] text-ink-2">
+                <input
+                  type="checkbox"
+                  checked={compare}
+                  onChange={(e) => setCompare(e.target.checked)}
+                  className="h-4 w-4 accent-[var(--s1)]"
+                />
+                Show the forecast without rainfall
+              </label>
             </div>
-            <Hydrograph
-              series={ws}
-              forecast={station?.fc}
-              fromSurface={zoom === "surface"}
-              height={380}
-            />
+            <Hydrograph detail={detail} forecast={forecast} showMemoryOnly={compare} height={400} />
+            {detail.obs.some((o) => o[2] === 1) && (
+              <p className="text-[0.8125rem] text-ink-3">
+                Open circles are readings added from India-WRIS after the research snapshot.
+              </p>
+            )}
           </>
         ) : (
-          <div className="flex h-[380px] items-center justify-center rounded-md border border-dashed border-rule-strong px-6 text-center text-[0.9375rem] text-ink-2">
-            {station
-              ? "This well's full reading history is not in the dashboard sample. Its summary and forecast are on the left."
+          <div className="flex h-[400px] items-center justify-center rounded-md border border-dashed border-rule-strong px-6 text-center text-[0.9375rem] text-ink-2">
+            {isLoading
+              ? "Loading this well's readings…"
               : "The well's readings and forecasts will appear here."}
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ForecastCard({ f, warning }: { f: WellForecast; warning: WarningSettings }) {
+  const pE1 = f.pE1;
+  const flagged = pE1 != null && pE1 >= warning.trigger;
+  const rainfallShift = f.m2 - f.m0;
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="text-[0.9375rem] text-ink-2">
+        {campaignLong(f.target)}, forecast from the {campaignShort(f.origin)} reading (
+        {fmt(f.now, 1)} m)
+      </div>
+      <div className="type-figure text-[2.6rem] leading-none text-ink">
+        {fmt(f.m2, 1)} <span className="text-[1.1rem] font-medium text-ink-2">m below ground</span>
+      </div>
+      {f.lo != null && f.hi != null && (
+        <div className="tnum text-[0.9375rem] text-ink-2">
+          80% range {fmt(f.lo, 1)}–{fmt(f.hi, 1)} m. Without rainfall: {fmt(f.m0, 1)} m (
+          {Math.abs(rainfallShift) < 0.05
+            ? "no change"
+            : `rainfall moves it ${fmt(Math.abs(rainfallShift), 1)} m ${rainfallShift > 0 ? "deeper" : "shallower"}`}
+          )
+        </div>
+      )}
+      <table className="w-full text-[0.9375rem]">
+        <caption className="sr-only">Warning probabilities</caption>
+        <tbody>
+          <tr className="border-b border-rule">
+            <th scope="row" className="py-1.5 pr-2 text-left font-normal text-ink">
+              {EVENT_SHORT.E1}
+              {f.thrE1 != null && (
+                <span className="tnum text-ink-3"> (&gt; {fmt(f.thrE1, 1)} m)</span>
+              )}
+            </th>
+            <td className="tnum py-1.5 text-right text-ink">{pE1 != null ? chance(pE1) : "—"}</td>
+          </tr>
+          <tr>
+            <th scope="row" className="py-1.5 pr-2 text-left font-normal text-ink">
+              {EVENT_SHORT.E3}
+            </th>
+            <td className="tnum py-1.5 text-right text-ink">
+              {f.pE3 != null ? chance(f.pE3) : "not applicable"}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      {pE1 != null && warning.event === "E1" && (
+        <div className="flex items-center gap-2 text-[0.9375rem] text-ink">
+          {flagged ? (
+            <AlertTriangle className="h-4 w-4 text-critical" aria-hidden />
+          ) : (
+            <CheckCircle2 className="h-4 w-4 text-good" aria-hidden />
+          )}
+          {flagged ? "Warning" : "No warning"} at your trigger of {pct(warning.trigger)}
+        </div>
+      )}
+      {f.advisory && (
+        <p className="max-w-[60ch] text-[0.9375rem] leading-relaxed text-ink-2">{f.advisory}</p>
+      )}
+    </div>
+  );
+}
+
+function RainfallEffect({
+  mae,
+}: {
+  mae: NonNullable<ReturnType<typeof useWellDetail>["detail"]>["mae"];
+}) {
+  const rows = HORIZON_KEYS.flatMap((k) => (mae?.[k] ? [{ k, ...mae[k]! }] : []));
+  if (!rows.length) return null;
+  return (
+    <div className="border-t border-rule pt-4">
+      <h3 className="text-[0.9375rem] font-semibold text-ink">
+        What rainfall changed at this well, 2019–2025
+      </h3>
+      <table className="mt-2 w-full text-[0.875rem]">
+        <thead>
+          <tr className="border-b border-rule-strong text-ink-2">
+            <th className="py-1.5 text-left font-medium">Horizon</th>
+            <th className="py-1.5 text-right font-medium">Error without</th>
+            <th className="py-1.5 text-right font-medium">With rainfall</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.k} className="border-b border-rule">
+              <td className="py-1.5 text-ink">
+                {HORIZON_LABEL[r.k]} <span className="text-ink-3">({int(r.n)})</span>
+              </td>
+              <td className="tnum py-1.5 text-right text-ink">{fmt(r.m0)} m</td>
+              <td className="tnum py-1.5 text-right text-ink">
+                {fmt(r.m2)} m{" "}
+                <span className="text-ink-2">
+                  {r.m2 < r.m0 ? "better" : r.m2 > r.m0 ? "worse" : "same"}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="mt-2 text-[0.8125rem] text-ink-3">
+        Mean absolute error of test forecasts; count in brackets.
+      </p>
     </div>
   );
 }

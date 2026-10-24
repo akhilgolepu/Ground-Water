@@ -10,10 +10,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { OperationalForecast, WellSeries } from "@/lib/research-data";
-import { campaignLong, fmt } from "@/lib/research-data";
-
-const MONTH: Record<string, number> = { Jan: 0, May: 4, Aug: 7, Nov: 10 };
+import type { WellDetail, WellForecast } from "@/lib/research-data";
+import { campaignLong, campaignYear, fmt } from "@/lib/research-data";
 
 /** Evenly spaced "nice" depth ticks (1, 2, 5 × 10ⁿ) covering the domain. */
 function depthTicks([lo, hi]: [number, number]): number[] {
@@ -26,37 +24,34 @@ function depthTicks([lo, hi]: [number, number]): number[] {
   return out;
 }
 
-/** Campaign label → fractional year, so the x-axis keeps real spacing. */
-function toYear(label: string): number {
-  const [y, s] = label.split("-");
-  return Number(y) + (MONTH[s ?? ""] ?? 0) / 12;
-}
-
 interface Row {
   x: number;
   label: string;
   obs?: number;
-  pred?: number;
+  wris?: boolean;
+  m0?: number;
+  m2?: number;
   band?: [number, number];
   next?: number;
   nextBand?: [number, number];
 }
 
 interface HydrographProps {
-  series: WellSeries;
-  forecast?: OperationalForecast | undefined;
-  /** Start the depth axis at the ground surface (0 m) instead of zooming to the data. */
+  detail: WellDetail;
+  forecast?: WellForecast | undefined;
+  /** Show the memory-only model's test forecasts next to the rainfall-aware ones. */
+  showMemoryOnly?: boolean;
   fromSurface?: boolean;
   height?: number;
-  /** Only draw observations after this year (keeps the hero readable). */
   sinceYear?: number;
   /** The page draws the ground line directly above the chart, so y = 0 sits on it. */
   groundAbove?: boolean;
 }
 
 export function Hydrograph({
-  series,
+  detail,
   forecast,
+  showMemoryOnly = false,
   fromSurface = false,
   height = 340,
   sinceYear,
@@ -67,35 +62,43 @@ export function Hydrograph({
     const row = (label: string) => {
       let r = byLabel.get(label);
       if (!r) {
-        r = { x: toYear(label), label };
+        r = { x: campaignYear(label), label };
         byLabel.set(label, r);
       }
       return r;
     };
-    for (const [label, depth] of series.obs) row(label).obs = depth;
-    for (const [label, q50, lo, hi] of series.pred) {
+    for (const [label, depth, wris] of detail.obs) {
       const r = row(label);
-      r.pred = q50;
-      r.band = [lo, hi];
+      r.obs = depth;
+      r.wris = wris === 1;
+    }
+    for (const [label, m0, m2, lo, hi] of detail.test ?? []) {
+      const r = row(label);
+      r.m0 = m0;
+      r.m2 = m2;
+      if (lo != null && hi != null) r.band = [lo, hi];
     }
     if (forecast) {
-      const last = series.obs[series.obs.length - 1];
-      if (last) {
-        const r = row(last[0]);
-        r.next = last[1];
-        r.nextBand = [last[1], last[1]];
-      }
+      const o = row(forecast.origin);
+      o.next = forecast.now;
+      o.nextBand = [forecast.now, forecast.now];
       const t = row(forecast.target);
-      t.next = forecast.q50;
-      t.nextBand = [forecast.lo, forecast.hi];
+      t.next = forecast.m2;
+      if (forecast.lo != null && forecast.hi != null) t.nextBand = [forecast.lo, forecast.hi];
     }
     let all = [...byLabel.values()].sort((a, b) => a.x - b.x);
     if (sinceYear !== undefined) all = all.filter((r) => r.x >= sinceYear);
 
     const values = all
-      .flatMap((r) => [r.obs, ...(r.band ?? []), ...(r.nextBand ?? [])])
-      .filter((v): v is number => v !== undefined);
-    if (forecast?.thr != null) values.push(forecast.thr);
+      .flatMap((r) => [
+        r.obs,
+        ...(r.band ?? []),
+        ...(r.nextBand ?? []),
+        showMemoryOnly ? r.m0 : undefined,
+        r.m2,
+      ])
+      .filter((v): v is number => v !== undefined && Number.isFinite(v));
+    if (forecast?.thrE1 != null) values.push(forecast.thrE1);
     const lo = Math.min(...values);
     const hi = Math.max(...values);
     const pad = Math.max(0.5, (hi - lo) * 0.08);
@@ -104,13 +107,13 @@ export function Hydrograph({
       : [Math.floor(lo - pad), Math.ceil(hi + pad)];
 
     const first = Math.ceil(all[0]?.x ?? 0);
-    const lastX = Math.floor(all[all.length - 1]?.x ?? 0);
-    const span = lastX - first;
+    const last = Math.floor(all[all.length - 1]?.x ?? 0);
+    const span = last - first;
     const step = span > 20 ? 5 : span > 8 ? 2 : 1;
     const t: number[] = [];
-    for (let y = first; y <= lastX; y++) if ((y - first) % step === 0) t.push(y);
+    for (let y = first; y <= last; y++) if ((y - first) % step === 0) t.push(y);
     return { rows: all, domain: dom, ticks: t };
-  }, [series, forecast, fromSurface, sinceYear]);
+  }, [detail, forecast, fromSurface, sinceYear, showMemoryOnly]);
 
   const showGround = domain[0] <= 0 && !groundAbove;
   const dense = rows.filter((r) => r.obs !== undefined).length > 70;
@@ -122,7 +125,7 @@ export function Hydrograph({
           data={rows}
           margin={{ top: groundAbove ? 0 : 8, right: 16, bottom: 4, left: 4 }}
         >
-          <CartesianGrid stroke="var(--rule)" strokeDasharray="0" vertical={false} />
+          <CartesianGrid stroke="var(--rule)" vertical={false} />
           <XAxis
             dataKey="x"
             type="number"
@@ -157,18 +160,8 @@ export function Hydrograph({
               }}
             />
           )}
-          {forecast?.thr != null && (
-            <ReferenceLine
-              y={forecast.thr}
-              stroke="var(--ink-3)"
-              strokeDasharray="5 4"
-              label={{
-                value: `Usual ${forecast.target.split("-")[1]} level (80th percentile)`,
-                position: "insideBottomLeft",
-                fill: "var(--ink-2)",
-                fontSize: 12,
-              }}
-            />
+          {forecast?.thrE1 != null && (
+            <ReferenceLine y={forecast.thrE1} stroke="var(--ink-3)" strokeDasharray="5 4" />
           )}
           <Area
             dataKey="band"
@@ -176,7 +169,6 @@ export function Hydrograph({
             stroke="none"
             fill="var(--band)"
             isAnimationActive={false}
-            connectNulls={false}
             activeDot={false}
           />
           <Area
@@ -196,20 +188,44 @@ export function Hydrograph({
             dot={
               dense
                 ? false
-                : { r: 3.5, fill: "var(--ink)", stroke: "var(--ground)", strokeWidth: 2 }
+                : (p: { cx?: number; cy?: number; index?: number; payload?: Row }) =>
+                    p.cx != null && p.cy != null && p.payload?.obs !== undefined ? (
+                      <circle
+                        key={`o-${p.index}`}
+                        cx={p.cx}
+                        cy={p.cy}
+                        r={3.5}
+                        fill={p.payload.wris ? "var(--ground)" : "var(--ink)"}
+                        stroke={p.payload.wris ? "var(--ink)" : "var(--ground)"}
+                        strokeWidth={p.payload.wris ? 1.5 : 2}
+                      />
+                    ) : (
+                      <g key={`o-${p.index}`} />
+                    )
             }
             activeDot={{ r: 5, fill: "var(--ink)", stroke: "var(--ground)", strokeWidth: 2 }}
             connectNulls
             isAnimationActive={false}
           />
+          {showMemoryOnly && (
+            <Line
+              dataKey="m0"
+              type="linear"
+              stroke="var(--s2)"
+              strokeWidth={2}
+              strokeDasharray="2 3"
+              dot={false}
+              connectNulls={false}
+              isAnimationActive={false}
+            />
+          )}
           <Line
-            dataKey="pred"
+            dataKey="m2"
             type="linear"
             stroke="var(--s1)"
             strokeWidth={2}
             strokeDasharray="6 4"
             dot={false}
-            activeDot={{ r: 4, fill: "var(--s1)", stroke: "var(--ground)", strokeWidth: 2 }}
             connectNulls={false}
             isAnimationActive={false}
           />
@@ -218,32 +234,43 @@ export function Hydrograph({
             type="linear"
             stroke="var(--s1)"
             strokeWidth={2}
-            dot={(props: { cx?: number; cy?: number; index?: number }) =>
-              props.index === rows.length - 1 && props.cx != null && props.cy != null ? (
+            dot={(p: { cx?: number; cy?: number; index?: number }) =>
+              p.index === rows.length - 1 && p.cx != null && p.cy != null ? (
                 <circle
                   key="next-dot"
-                  cx={props.cx}
-                  cy={props.cy}
+                  cx={p.cx}
+                  cy={p.cy}
                   r={5}
                   fill="var(--s1)"
                   stroke="var(--ground)"
                   strokeWidth={2}
                 />
               ) : (
-                <g key={`n-${props.index}`} />
+                <g key={`n-${p.index}`} />
               )
             }
             connectNulls
             isAnimationActive={false}
           />
-          <Tooltip content={<HydroTooltip />} cursor={{ stroke: "var(--rule-strong)" }} />
+          <Tooltip
+            content={<HydroTooltip showMemoryOnly={showMemoryOnly} />}
+            cursor={{ stroke: "var(--rule-strong)" }}
+          />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-function HydroTooltip({ active, payload }: { active?: boolean; payload?: { payload: Row }[] }) {
+function HydroTooltip({
+  active,
+  payload,
+  showMemoryOnly,
+}: {
+  active?: boolean;
+  payload?: { payload: Row }[];
+  showMemoryOnly: boolean;
+}) {
   const r = payload?.[0]?.payload;
   if (!active || !r) return null;
   const isNext = r.next !== undefined && r.obs === undefined;
@@ -251,23 +278,38 @@ function HydroTooltip({ active, payload }: { active?: boolean; payload?: { paylo
     <div className="rounded-md border border-rule bg-panel px-3 py-2 text-[0.875rem] shadow-sm">
       <div className="font-semibold text-ink">{campaignLong(r.label)}</div>
       {r.obs !== undefined && (
-        <div className="tnum text-ink-2">Observed: {fmt(r.obs)} m below ground</div>
-      )}
-      {r.pred !== undefined && r.band && (
         <div className="tnum text-ink-2">
-          Forecast 3 months earlier: {fmt(r.pred)} m (80%: {fmt(r.band[0])}–{fmt(r.band[1])})
+          Observed: {fmt(r.obs)} m below ground{r.wris ? " (India-WRIS update)" : ""}
         </div>
+      )}
+      {r.m2 !== undefined && (
+        <div className="tnum text-ink-2">
+          Forecast 3 months earlier: {fmt(r.m2)} m
+          {r.band ? ` (80%: ${fmt(r.band[0])}–${fmt(r.band[1])})` : ""}
+        </div>
+      )}
+      {showMemoryOnly && r.m0 !== undefined && (
+        <div className="tnum text-ink-2">Without rainfall: {fmt(r.m0)} m</div>
       )}
       {isNext && r.nextBand && (
         <div className="tnum text-ink-2">
-          After last reading: {fmt(r.next ?? 0)} m (80%: {fmt(r.nextBand[0])}–{fmt(r.nextBand[1])})
+          Latest forecast: {fmt(r.next ?? 0)} m (80%: {fmt(r.nextBand[0])}–{fmt(r.nextBand[1])})
         </div>
       )}
     </div>
   );
 }
 
-export function HydrographLegend({ withNext = true }: { withNext?: boolean }) {
+export function HydrographLegend({
+  withNext = true,
+  showMemoryOnly = false,
+  thresholdSeason,
+}: {
+  withNext?: boolean;
+  showMemoryOnly?: boolean;
+  /** Season of the "usual level" line, e.g. "May"; omit when no threshold is drawn. */
+  thresholdSeason?: string | undefined;
+}) {
   return (
     <ul className="flex flex-wrap gap-x-5 gap-y-1 text-[0.875rem] text-ink-2">
       <li className="flex items-center gap-2">
@@ -290,15 +332,47 @@ export function HydrographLegend({ withNext = true }: { withNext?: boolean }) {
             strokeDasharray="6 4"
           />
         </svg>
-        Forecast made 3 months earlier, with 80% range
+        Forecast made 3 months earlier, with rainfall, 80% range
       </li>
+      {showMemoryOnly && (
+        <li className="flex items-center gap-2">
+          <svg width="22" height="10" aria-hidden>
+            <line
+              x1="0"
+              y1="5"
+              x2="22"
+              y2="5"
+              stroke="var(--s2)"
+              strokeWidth="2"
+              strokeDasharray="2 3"
+            />
+          </svg>
+          Same forecast without rainfall
+        </li>
+      )}
+      {thresholdSeason && (
+        <li className="flex items-center gap-2">
+          <svg width="22" height="10" aria-hidden>
+            <line
+              x1="0"
+              y1="5"
+              x2="22"
+              y2="5"
+              stroke="var(--ink-3)"
+              strokeWidth="1.5"
+              strokeDasharray="5 4"
+            />
+          </svg>
+          Usual {thresholdSeason} level (80th percentile)
+        </li>
+      )}
       {withNext && (
         <li className="flex items-center gap-2">
           <svg width="22" height="10" aria-hidden>
             <line x1="0" y1="5" x2="16" y2="5" stroke="var(--s1)" strokeWidth="2" />
             <circle cx="17" cy="5" r="4" fill="var(--s1)" />
           </svg>
-          Forecast after the last reading
+          Forecast after the latest reading
         </li>
       )}
     </ul>

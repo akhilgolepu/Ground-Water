@@ -10,14 +10,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    port: 5173,
-    proxy: {
-      "/api": {
-        target: "http://localhost:8000",
-        changeOrigin: true,
-        rewrite: (p) => p, // keep /api prefix — FastAPI router already uses /api
-      },
-    },
-  },
+  // Fully static: the dashboard reads JSON from public/data, so no API server is needed.
+  server: { port: 5173 },
+  preview: { port: 4173 },
 });

@@ -3,7 +3,7 @@
  * Keep the two in sync when the plan changes.
  */
 
-export type GapStatus = "Pilot result in hand" | "Next" | "Planned" | "Needs new data";
+export type GapStatus = "Answered in the paper" | "Planned" | "Needs new data";
 
 export interface Gap {
   id: string;
@@ -22,24 +22,24 @@ export const gaps: Gap[] = [
     title: "Does the monsoon add skill, and how far ahead?",
     question:
       "Add gridded IMD rainfall accumulated between campaigns, drought indices and ENSO/IOD indices, then measure the extra skill at 3, 6 and 12 months against groundwater memory alone.",
-    why: "The weather columns in the public CGWB file are single-day readings (about 3 mm per well-year), so earlier conclusions that climate adds nothing were never really tested.",
-    status: "Next",
+    why: "Answer: a small, robust gain, largest at 6 months (5% less squared error, better in 22 of 24 test campaigns). A perfect rainfall forecast would add a further 2.5–9.6%. The file's one-day rainfall adds nothing.",
+    status: "Answered in the paper",
   },
   {
     id: "G2",
     title: "Intervals that hold for shallow and deep wells alike",
     question:
       "Calibrate uncertainty separately by aquifer depth and season, and adapt it as conditions shift.",
-    why: "One interval width covers 88% of shallow-well readings but only 44% of readings in wells deeper than 40 m.",
-    status: "Pilot result in hand",
+    why: "Answer: one width covers 88% of shallow-well readings but under 50% in wells deeper than 40 m. Ranges per depth and region, updated as readings arrive, keep every class within about 3 points of 80%.",
+    status: "Answered in the paper",
   },
   {
     id: "G3",
     title: "When is a warning worth acting on?",
     question:
       "Score exceedance warnings by their economic value across cost–loss ratios, and find the trigger probabilities that serve village water-security plans.",
-    why: "No groundwater study has measured the decision value of its forecasts.",
-    status: "Planned",
+    why: "Answer: yes, once probabilities are recalibrated on recent outcomes. Warning when the chance is at least the cost-to-loss ratio recovers up to 43% (deeper than usual) and 69% (below 8 m) of a perfect forecast's value.",
+    status: "Answered in the paper",
   },
   {
     id: "G4",

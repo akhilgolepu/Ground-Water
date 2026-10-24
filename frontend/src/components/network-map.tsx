@@ -1,9 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { RiskClass, Station } from "@/lib/research-data";
-import { fmt, int, pct } from "@/lib/research-data";
+import type { EventKey, HorizonKey, Station } from "@/lib/research-data";
+import { EVENT_SHORT, campaignShort, chance, fmt, int, pct } from "@/lib/research-data";
 import { useCssColors } from "@/lib/theme";
 
-export type MapLayer = "risk" | "trend" | "network";
+export type MapLayer = "warnings" | "trend" | "network";
+
+/** The decision settings the warnings layer is drawn with. */
+export interface WarningSettings {
+  event: EventKey;
+  h: HorizonKey;
+  trigger: number;
+}
 
 const LON_MIN = 68;
 const LON_MAX = 97.6;
@@ -14,7 +21,6 @@ const ASPECT = (LAT_MAX - LAT_MIN) / ((LON_MAX - LON_MIN) * KX);
 
 const COLOR_VARS = [
   "critical",
-  "warning",
   "good",
   "none",
   "rising",
@@ -34,40 +40,60 @@ interface ClassDef {
   faint?: boolean;
 }
 
-export const LAYER_CLASSES: Record<MapLayer, ClassDef[]> = {
-  risk: [
-    { key: "Alert", label: "Alert", color: "critical" },
-    { key: "Watch", label: "Watch", color: "warning" },
-    { key: "Normal", label: "Normal", color: "good" },
-    { key: "Insufficient history", label: "Not enough history", color: "none" },
-    { key: "none", label: "No forecast (record ends before 2022)", color: "none", faint: true },
-  ],
-  trend: [
-    { key: "deepening", label: "Deepening (significant)", color: "deepening" },
-    { key: "flat", label: "No significant trend", color: "neutral-mid" },
-    { key: "rising", label: "Rising (significant)", color: "rising" },
-    { key: "none", label: "Under 8 years of May readings", color: "none", faint: true },
-  ],
-  network: [
+export function layerClasses(layer: MapLayer, w: WarningSettings): ClassDef[] {
+  if (layer === "warnings") {
+    return [
+      { key: "warn", label: `Warning (chance ≥ ${pct(w.trigger)})`, color: "critical" },
+      { key: "ok", label: "No warning", color: "good" },
+      {
+        key: "na",
+        label:
+          w.event === "E3"
+            ? "Not applicable (already below 8 m) or no usual level"
+            : "No usual level for the season",
+        color: "none",
+      },
+      { key: "none", label: "No forecast (no reading since 2019)", color: "none", faint: true },
+    ];
+  }
+  if (layer === "trend") {
+    return [
+      { key: "deepening", label: "Deepening (significant)", color: "deepening" },
+      { key: "flat", label: "No significant trend", color: "neutral-mid" },
+      { key: "rising", label: "Rising (significant)", color: "rising" },
+      { key: "none", label: "Under 8 years of May readings", color: "none", faint: true },
+    ];
+  }
+  return [
     { key: "manual", label: "Manual (4 campaigns a year)", color: "s1" },
     { key: "DWLR", label: "Telemetry (DWLR, daily)", color: "s2" },
-  ],
-};
+  ];
+}
 
-export function classify(s: Station, layer: MapLayer): string {
+export function warningProbability(s: Station, w: WarningSettings): number | null | undefined {
+  const o = s.ops?.[w.h];
+  if (!o) return undefined;
+  return w.event === "E1" ? o.e1 : o.e3;
+}
+
+export function classify(s: Station, layer: MapLayer, w: WarningSettings): string {
   if (layer === "network") return s.net;
-  if (layer === "risk") return s.risk ?? "none";
-  if (s.trend === undefined || s.trendP === undefined) return "none";
+  if (layer === "warnings") {
+    const p = warningProbability(s, w);
+    if (p === undefined) return "none";
+    if (p === null) return "na";
+    return p >= w.trigger ? "warn" : "ok";
+  }
+  if (s.trend == null || s.trendP == null) return "none";
   if (s.trendP >= 0.05) return "flat";
   return s.trend > 0 ? "deepening" : "rising";
 }
 
-const RISK_ORDER: Record<string, number> = {
+const ORDER: Record<string, number> = {
   none: 0,
-  "Insufficient history": 1,
-  Normal: 2,
-  Watch: 3,
-  Alert: 4,
+  na: 1,
+  ok: 2,
+  warn: 3,
   flat: 1,
   rising: 2,
   deepening: 3,
@@ -78,11 +104,12 @@ const RISK_ORDER: Record<string, number> = {
 interface NetworkMapProps {
   stations: Station[];
   layer: MapLayer;
+  warning: WarningSettings;
   selectedId: string | null;
   onSelect: (id: string) => void;
 }
 
-export function NetworkMap({ stations, layer, selectedId, onSelect }: NetworkMapProps) {
+export function NetworkMap({ stations, layer, warning, selectedId, onSelect }: NetworkMapProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [width, setWidth] = useState(0);
@@ -106,13 +133,14 @@ export function NetworkMap({ stations, layer, selectedId, onSelect }: NetworkMap
     ];
   }, [width]);
 
-  // Draw low-priority classes first so alerts and significant trends sit on top.
+  // Low-priority classes first so warnings and significant trends sit on top.
   const ordered = useMemo(
     () =>
       [...stations].sort(
-        (a, b) => (RISK_ORDER[classify(a, layer)] ?? 0) - (RISK_ORDER[classify(b, layer)] ?? 0),
+        (a, b) =>
+          (ORDER[classify(a, layer, warning)] ?? 0) - (ORDER[classify(b, layer, warning)] ?? 0),
       ),
-    [stations, layer],
+    [stations, layer, warning],
   );
 
   useEffect(() => {
@@ -125,10 +153,10 @@ export function NetworkMap({ stations, layer, selectedId, onSelect }: NetworkMap
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, width, height);
-    const defs = Object.fromEntries(LAYER_CLASSES[layer].map((c) => [c.key, c]));
+    const defs = Object.fromEntries(layerClasses(layer, warning).map((c) => [c.key, c]));
     const r = width < 520 ? 1.8 : 2.6;
     for (const s of ordered) {
-      const def = defs[classify(s, layer)];
+      const def = defs[classify(s, layer, warning)];
       if (!def) continue;
       const [x, y] = project(s.lon, s.lat);
       ctx.globalAlpha = def.faint ? 0.35 : 0.92;
@@ -151,7 +179,7 @@ export function NetworkMap({ stations, layer, selectedId, onSelect }: NetworkMap
       ctx.arc(x, y, 7.5, 0, Math.PI * 2);
       ctx.stroke();
     }
-  }, [ordered, layer, width, height, project, colors, selectedId, stations]);
+  }, [ordered, layer, warning, width, height, project, colors, selectedId, stations]);
 
   const nearest = (clientX: number, clientY: number) => {
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -171,6 +199,8 @@ export function NetworkMap({ stations, layer, selectedId, onSelect }: NetworkMap
     return best ? { s: best, x: mx, y: my } : null;
   };
 
+  const layerName =
+    layer === "warnings" ? "warnings" : layer === "trend" ? "long-term trend" : "monitoring type";
   return (
     <div ref={wrapRef} className="relative w-full">
       <canvas
@@ -178,7 +208,7 @@ export function NetworkMap({ stations, layer, selectedId, onSelect }: NetworkMap
         style={{ width, height }}
         className="block cursor-crosshair"
         role="img"
-        aria-label={`Map of ${stations.length} monitoring wells coloured by ${layer === "risk" ? "early-warning class" : layer === "trend" ? "long-term trend" : "monitoring type"}. Use the well selector below for keyboard access.`}
+        aria-label={`Map of ${stations.length} monitoring wells coloured by ${layerName}. Use the well search below for keyboard access.`}
         onMouseMove={(e) => setHover(nearest(e.clientX, e.clientY))}
         onMouseLeave={() => setHover(null)}
         onClick={(e) => {
@@ -194,7 +224,7 @@ export function NetworkMap({ stations, layer, selectedId, onSelect }: NetworkMap
             top: Math.max(0, hover.y - 10),
           }}
         >
-          <StationSummary s={hover.s} />
+          <StationSummary s={hover.s} warning={warning} />
           <div className="mt-1 text-ink-3">Click to open this well</div>
         </div>
       )}
@@ -202,44 +232,41 @@ export function NetworkMap({ stations, layer, selectedId, onSelect }: NetworkMap
   );
 }
 
-export function StationSummary({ s }: { s: Station }) {
+export function StationSummary({ s, warning }: { s: Station; warning?: WarningSettings }) {
+  const p = warning ? warningProbability(s, warning) : undefined;
+  const target = warning ? s.ops?.[warning.h]?.t : undefined;
   return (
     <>
       <div className="font-semibold text-ink">Well {s.id}</div>
       <div className="tnum text-ink-2">
-        {s.net === "DWLR" ? "Telemetry well" : "Manual well"}, {int(s.n)} readings, {s.first}–
-        {s.last}
+        {s.net === "DWLR" ? "Telemetry well" : "Manual well"}
+        {s.state ? `, ${s.state}` : ""}, {int(s.n)} readings, {s.first}–{s.last}
       </div>
       <div className="tnum text-ink-2">Typical depth {fmt(s.median, 1)} m below ground</div>
-      {s.trend !== undefined && s.trendP !== undefined && (
+      {s.trend != null && s.trendP != null && (
         <div className="tnum text-ink-2">
-          Pre-monsoon trend {s.trend > 0 ? "+" : ""}
+          May trend {s.trend > 0 ? "+" : ""}
           {fmt(s.trend)} m/yr {s.trendP < 0.05 ? "(significant)" : "(not significant)"}
         </div>
       )}
-      {s.fc?.p != null && (
+      {warning && p != null && target && (
         <div className="tnum text-ink-2">
-          Chance of deeper-than-usual level: {pct(s.fc.p)} ({s.risk})
+          {EVENT_SHORT[warning.event]}, {campaignShort(target)}: {chance(p)} chance
         </div>
       )}
     </>
   );
 }
 
-export function layerCounts(stations: Station[], layer: MapLayer): Record<string, number> {
+export function layerCounts(
+  stations: Station[],
+  layer: MapLayer,
+  w: WarningSettings,
+): Record<string, number> {
   const counts: Record<string, number> = {};
   for (const s of stations) {
-    const k = classify(s, layer);
+    const k = classify(s, layer, w);
     counts[k] = (counts[k] ?? 0) + 1;
   }
   return counts;
 }
-
-export const RISK_COPY: Record<RiskClass, string> = {
-  Alert:
-    "60% or higher chance the forecast reading is deeper than this well's usual level for the season.",
-  Watch: "30–60% chance the forecast reading is deeper than usual.",
-  Normal: "Under 30% chance the forecast reading is deeper than usual.",
-  "Insufficient history":
-    "Fewer than four past readings for that season, so there is no usual level to compare against.",
-};

@@ -1,35 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, Eye, HelpCircle } from "lucide-react";
 
 import { SiteHeader } from "@/components/site-header";
 import { Hydrograph, HydrographLegend } from "@/components/hydrograph";
-import { LAYER_CLASSES, NetworkMap, layerCounts } from "@/components/network-map";
-import type { MapLayer } from "@/components/network-map";
+import { NetworkMap, layerClasses, layerCounts } from "@/components/network-map";
+import type { MapLayer, WarningSettings } from "@/components/network-map";
 import { WellExplorer } from "@/components/well-explorer";
 import {
-  CalibrationChart,
-  CoverageByDepth,
-  MethodTable,
-  ReliabilityChart,
-  ShapChart,
-  SkillChart,
-  StationSkillChart,
-} from "@/components/evidence";
+  CoverageFindings,
+  DecisionPanel,
+  HorizonPicker,
+  RainfallFindings,
+} from "@/components/findings";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { PAPER_TITLE, beyond, gaps } from "@/content/research";
-import type { HorizonKey, Station, WellSeries } from "@/lib/research-data";
+import type { HorizonKey, Station } from "@/lib/research-data";
 import {
-  HORIZON_KEYS,
+  EVENT_SHORT,
   HORIZON_LABEL,
   campaignLong,
+  campaignShort,
+  chance,
   fmt,
   int,
   pct,
-  useBenchmark,
-  useSeries,
+  useCalibration,
+  useDecision,
+  useSkill,
   useStations,
   useSummary,
+  useWellDetail,
 } from "@/lib/research-data";
 
 export const Route = createFileRoute("/")({
@@ -46,40 +46,49 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-/** The hero well: a long record with a current warning, so the picture shows why it matters. */
-function pickFeatured(stations: Station[], series: Record<string, WellSeries>): string | null {
-  const candidates = stations
-    .filter((s) => series[s.id] && s.fc && s.risk === "Alert" && s.yrs >= 15)
-    .sort((a, b) => (b.fc?.p ?? 0) - (a.fc?.p ?? 0) || b.n - a.n);
-  return candidates[0]?.id ?? Object.keys(series)[0] ?? null;
+/** The hero well: a long record whose latest forecast carries a warning. */
+function pickFeatured(stations: Station[]): Station | undefined {
+  return stations
+    .filter((s) => s.net === "manual" && s.yrs >= 15 && (s.ops?.["1"]?.e1 ?? 0) >= 0.6)
+    .sort((a, b) => (b.ops?.["1"]?.e1 ?? 0) - (a.ops?.["1"]?.e1 ?? 0) || b.n - a.n)[0];
 }
+
+const DEFAULT_WARNING: WarningSettings = { event: "E1", h: "1", trigger: 0.3 };
 
 function Index() {
   const summary = useSummary();
   const stations = useStations();
-  const series = useSeries();
-  const benchmark = useBenchmark();
+  const skill = useSkill();
+  const calibration = useCalibration();
+  const decision = useDecision();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [layer, setLayer] = useState<MapLayer>("risk");
-  const [horizon, setHorizon] = useState<HorizonKey>("1");
+  const [layer, setLayer] = useState<MapLayer>("warnings");
+  const [warning, setWarning] = useState<WarningSettings>(DEFAULT_WARNING);
+  const [horizon, setHorizon] = useState<HorizonKey>("2");
 
-  const featuredId = useMemo(
-    () => (stations.data && series.data ? pickFeatured(stations.data, series.data) : null),
-    [stations.data, series.data],
+  const featured = useMemo(
+    () => (stations.data ? pickFeatured(stations.data) : undefined),
+    [stations.data],
   );
+  const featuredDetail = useWellDetail(featured);
   useEffect(() => {
-    if (!selectedId && featuredId) setSelectedId(featuredId);
-  }, [featuredId, selectedId]);
+    if (!selectedId && featured) setSelectedId(featured.id);
+  }, [featured, selectedId]);
 
-  const featured = featuredId ? stations.data?.find((s) => s.id === featuredId) : undefined;
-  const featuredSeries = featuredId ? series.data?.[featuredId] : undefined;
-  const loadError = [summary, stations, series, benchmark].find((q) => q.error)?.error;
+  const loadError = [summary, stations, skill, calibration, decision].find((q) => q.error)?.error;
+  const gain6 = skill.data?.gains.find(
+    (g) => g.h === 2 && g.a === "M0 memory" && g.b === "M2 + ENSO/IOD",
+  );
+  const value3 = decision.data?.triggers.find(
+    (t) => t.h === 1 && t.event === "E1" && Math.abs(t.trigger - 0.3) < 1e-6,
+  );
 
   const selectWell = (id: string) => {
     setSelectedId(id);
     document.getElementById("wells")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+  const fc = featuredDetail.detail?.ops?.["1"];
 
   return (
     <div id="top" className="min-h-screen bg-ground text-ink">
@@ -91,20 +100,18 @@ function Index() {
           <h1 className="type-display max-w-[17ch] text-[clamp(2.4rem,5.6vw,4.4rem)] text-ink">
             Where India's groundwater is heading, and how sure we can be
           </h1>
-          <div className="mt-6 grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-12">
+          <div className="mt-6 grid gap-6 md:grid-cols-2 md:gap-12">
             <p className="max-w-[56ch] text-[1.1rem] leading-relaxed text-ink-2">
               Forecasts for wells in the Central Ground Water Board network, three to twelve months
-              ahead. Each forecast comes with a range that has been checked against what actually
-              happened, so a warning means what it says.
+              ahead, with ranges and warning probabilities checked against what actually happened in
+              2019–2025.
             </p>
-            {summary.data && (
-              <p className="tnum max-w-[48ch] text-[1.1rem] leading-relaxed text-ink-2">
+            {summary.data && gain6 && value3 && (
+              <p className="tnum max-w-[50ch] text-[1.1rem] leading-relaxed text-ink-2">
                 Built from {int(summary.data.n_obs)} readings at {int(summary.data.n_stations)}{" "}
-                wells, {summary.data.first_year} to {summary.data.last_year}. From each well's
-                latest reading (mostly 2022–2023), {int(summary.data.risk_counts.Alert ?? 0)} wells
-                were heading for a deeper-than-usual level, and{" "}
-                {int(summary.data.trend.sig_deepening)} show a significant long-term fall in the
-                pre-monsoon water table.
+                wells. Monsoon rainfall and El Niño/IOD cut the squared error of six-month forecasts
+                by {pct(gain6.mse_reduction, 0)}. Acting on three-month warnings at a 30% trigger
+                recovers {pct(value3.value, 0)} of a perfect forecast's value.
               </p>
             )}
           </div>
@@ -122,11 +129,11 @@ function Index() {
             <p role="alert" className="py-10 text-ink">
               {(loadError as Error).message}
             </p>
-          ) : featured && featuredSeries ? (
+          ) : featured && featuredDetail.detail ? (
             <>
               <Hydrograph
-                series={featuredSeries}
-                forecast={featured.fc}
+                detail={featuredDetail.detail}
+                forecast={fc}
                 fromSurface
                 groundAbove
                 height={380}
@@ -134,17 +141,21 @@ function Index() {
               />
               <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <p className="max-w-[70ch] text-[0.9375rem] text-ink-2">
-                  Well {featured.id} ({fmt(featured.lat, 2)}° N, {fmt(featured.lon, 2)}° E). Depth
-                  below ground is drawn downward, the way the water sits under the surface.
-                  {featured.fc?.p != null &&
-                    ` For ${campaignLong(featured.fc.target)} the model gives a ${pct(featured.fc.p)} chance of a deeper-than-usual reading.`}
+                  Well {featured.id}
+                  {featured.state ? `, ${featured.state}` : ""} ({fmt(featured.lat, 2)}° N,{" "}
+                  {fmt(featured.lon, 2)}° E). Depth below ground is drawn downward, the way the
+                  water sits under the surface.
+                  {fc?.pE1 != null &&
+                    ` For ${campaignLong(fc.target)} the chance of a deeper-than-usual reading is ${chance(fc.pE1)}.`}
                 </p>
-                <HydrographLegend />
+                <HydrographLegend
+                  thresholdSeason={fc?.thrE1 != null ? fc.target.split("-")[1] : undefined}
+                />
               </div>
             </>
           ) : (
             <div
-              className="h-[360px] animate-pulse rounded-md bg-sunk"
+              className="h-[380px] animate-pulse rounded-md bg-sunk"
               aria-label="Loading featured well"
             />
           )}
@@ -154,7 +165,7 @@ function Index() {
         <Section
           id="network"
           title="The monitoring network"
-          lede="Every point is a well. Switch layers to see current warnings, long-term trends or how each well is measured."
+          lede="Every point is a well. The warnings layer follows the settings in the next section."
         >
           {stations.data ? (
             <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -162,6 +173,7 @@ function Index() {
                 <NetworkMap
                   stations={stations.data}
                   layer={layer}
+                  warning={warning}
                   selectedId={selectedId}
                   onSelect={selectWell}
                 />
@@ -177,7 +189,7 @@ function Index() {
                   className="w-full flex-wrap justify-start rounded-md border border-rule"
                   aria-label="Map layer"
                 >
-                  <ToggleGroupItem value="risk" className="flex-1 px-3 text-[0.875rem]">
+                  <ToggleGroupItem value="warnings" className="flex-1 px-3 text-[0.875rem]">
                     Warnings
                   </ToggleGroupItem>
                   <ToggleGroupItem value="trend" className="flex-1 px-3 text-[0.875rem]">
@@ -187,15 +199,22 @@ function Index() {
                     Type
                   </ToggleGroupItem>
                 </ToggleGroup>
-                <MapLegend stations={stations.data} layer={layer} />
+                <MapLegend stations={stations.data} layer={layer} warning={warning} />
                 <p className="text-[0.875rem] text-ink-2">
-                  {layer === "risk" &&
-                    "Each warning compares the forecast for the campaign after a well's last reading with that well's own usual level for the season, so a deep well is not flagged just for being deep. Most manual records in this file end in 2022–2023."}
+                  {layer === "warnings" &&
+                    `${EVENT_SHORT[warning.event]}, ${HORIZON_LABEL[warning.h]} after each well's latest reading, warning at a ${pct(warning.trigger)} chance or more.`}
                   {layer === "trend" &&
                     "Sen's slope of May (pre-monsoon) depth for wells with at least eight years of May readings, tested with Mann–Kendall at the 5% level."}
                   {layer === "network" &&
                     "Manual wells are read in January, May, August and November. Telemetry wells report several times a day, mostly since 2023."}
                 </p>
+                {layer === "warnings" && summary.data && (
+                  <p className="text-[0.8125rem] text-ink-3">
+                    Latest readings in the data range from 2019 to{" "}
+                    {campaignShort(summary.data.operational.latest_origin)}; most are from
+                    2022–2023, when the published manual records end.
+                  </p>
+                )}
               </div>
             </div>
           ) : (
@@ -203,83 +222,81 @@ function Index() {
           )}
         </Section>
 
-        {/* ── Wells ── */}
+        {/* ── Decide ── */}
         <Section
-          id="wells"
-          title="Look at one well"
-          lede="Readings, the forecasts the model would have made for them, and the forecast for the campaign after the last reading."
+          id="decide"
+          title="Decide when to warn"
+          lede="A warning is worth acting on when the chance of the event is at least the cost of acting divided by the loss it avoids. Set that ratio and see how the warnings would have performed in 2019–2025."
         >
-          {stations.data && series.data ? (
-            <WellExplorer
+          {decision.data && stations.data ? (
+            <DecisionPanel
+              data={decision.data}
               stations={stations.data}
-              series={series.data}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
+              warning={warning}
+              onChange={setWarning}
             />
           ) : (
             <div className="h-[420px] animate-pulse rounded-md bg-sunk" />
           )}
         </Section>
 
-        {/* ── Evidence ── */}
+        {/* ── Wells ── */}
         <Section
-          id="evidence"
-          title="How far to trust the forecasts"
-          lede={`All results are on readings from 2019 to 2025, which the model never saw. It was trained on data up to ${benchmark.data?.split.train_end_year ?? 2015} and calibrated on ${(benchmark.data?.split.train_end_year ?? 2015) + 1}–${benchmark.data?.split.cal_end_year ?? 2018}.`}
+          id="wells"
+          title="Look at one well"
+          lede="Readings, the forecasts made three months ahead with and without rainfall, and the forecasts after the latest reading."
         >
-          {benchmark.data ? (
-            <div className="flex flex-col gap-10">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="text-[0.9375rem] text-ink-2" id="horizon-label">
-                  Forecast horizon
-                </span>
-                <ToggleGroup
-                  type="single"
-                  value={horizon}
-                  onValueChange={(v) => v && setHorizon(v as HorizonKey)}
-                  className="rounded-md border border-rule"
-                  aria-labelledby="horizon-label"
-                >
-                  {HORIZON_KEYS.map((k) => (
-                    <ToggleGroupItem key={k} value={k} className="px-4 text-[0.875rem]">
-                      {HORIZON_LABEL[k]}
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
-              </div>
-
-              <CoverageByDepth data={benchmark.data} h={horizon} />
-
-              <div className="grid gap-10 lg:grid-cols-2">
-                <CalibrationChart data={benchmark.data} h={horizon} />
-                <MethodTable data={benchmark.data} h={horizon} />
-              </div>
-              <div className="grid gap-10 lg:grid-cols-2">
-                <SkillChart data={benchmark.data} h={horizon} />
-                <StationSkillChart data={benchmark.data} h={horizon} />
-              </div>
-              <div className="grid gap-10 lg:grid-cols-2">
-                <ReliabilityChart data={benchmark.data} h={horizon} />
-                <ShapChart data={benchmark.data} h={horizon} />
-              </div>
-            </div>
+          {stations.data ? (
+            <WellExplorer
+              stations={stations.data}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              warning={warning}
+            />
           ) : (
             <div className="h-[420px] animate-pulse rounded-md bg-sunk" />
           )}
         </Section>
 
-        {/* ── Agenda ── */}
+        {/* ── Findings ── */}
         <Section
-          id="agenda"
-          title="Research agenda"
-          lede={`Working paper: ${PAPER_TITLE}. G1 to G3 form the paper; the rest are follow-ups.`}
+          id="findings"
+          title="What the research found"
+          lede="All results are on 2019–2025 readings the models never saw. Models were trained on data up to 2015 and calibrated on 2016–2018."
+        >
+          <div className="mb-10">
+            <HorizonPicker value={horizon} onChange={setHorizon} id="findings-horizon" />
+          </div>
+          <h3 className="type-heading mb-6 text-[1.45rem] text-ink">
+            Does monsoon rainfall improve the forecasts?
+          </h3>
+          {skill.data ? (
+            <RainfallFindings data={skill.data} h={horizon} />
+          ) : (
+            <div className="h-[300px] animate-pulse rounded-md bg-sunk" />
+          )}
+          <h3 className="type-heading mb-6 mt-16 text-[1.45rem] text-ink">
+            Can the ranges be trusted for every kind of well?
+          </h3>
+          {calibration.data ? (
+            <CoverageFindings data={calibration.data} h={horizon} />
+          ) : (
+            <div className="h-[300px] animate-pulse rounded-md bg-sunk" />
+          )}
+        </Section>
+
+        {/* ── Paper ── */}
+        <Section
+          id="paper"
+          title="The paper"
+          lede={`${PAPER_TITLE}. Questions 1–3 are answered above; 4–6 are follow-up work.`}
         >
           <ul className="grid gap-x-12 gap-y-8 md:grid-cols-2">
-            {gaps.map((g) => (
+            {gaps.map((g, i) => (
               <li key={g.id} className="flex flex-col gap-2 border-t border-rule pt-4">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="type-heading text-[1.15rem] text-ink">
-                    <span className="tnum mr-2 text-ink-3">{g.id}</span>
+                    <span className="tnum mr-2 text-ink-3">{i + 1}</span>
                     {g.title}
                   </h3>
                   <span className="rounded-md bg-sunk px-2 py-0.5 text-[0.8125rem] text-ink-2">
@@ -307,17 +324,30 @@ function Index() {
         <div className="mx-auto flex max-w-[1200px] flex-col gap-3 px-4 py-10 text-[0.875rem] text-ink-2 sm:px-6">
           <p className="max-w-[80ch]">
             Data: CGWB groundwater levels from the public "Groundwater India Data" compilation
-            (manual network 1994–2025, DWLR telemetry mostly 2023–2025), cleaned as described in
-            docs/04. Most manual-well records in this file end in 2022–2023, so forecasts start from
-            each well's last reading; a refresh from India-WRIS would make them current. Forecasts
-            use groundwater history only; rainfall forcing is being added.
+            (manual network 1994–2025, DWLR telemetry mostly 2023–2025); IMD gridded rainfall and
+            temperature; NOAA Niño 3.4 and DMI; state boundaries from geoBoundaries (ODbL).
+            Processing and every figure are reproducible with scripts/reproduce.sh.
           </p>
-          <p className="max-w-[80ch]">
-            An earlier version of this dashboard showed results from a pipeline that trained on
-            borehole depth instead of water level. Those numbers were withdrawn; see
-            docs/01-project-audit.md.
-          </p>
-          {summary.data && <p>Data generated {summary.data.generated}.</p>}
+          {summary.data && (
+            <>
+              <p className="max-w-[80ch]">
+                {summary.data.wris.wris_used
+                  ? `India-WRIS refresh: ${int(summary.data.wris.wells_extended ?? 0)} wells extended by ${int(summary.data.wris.campaigns_added ?? 0)} campaigns.`
+                  : "India-WRIS refresh: not applied to this build."}
+              </p>
+              <details className="max-w-[80ch] [overflow-wrap:anywhere]">
+                <summary className="cursor-pointer text-ink">Where each number comes from</summary>
+                <ul className="mt-2 flex flex-col gap-1">
+                  {Object.entries(summary.data.sources).map(([k, v]) => (
+                    <li key={k}>
+                      <span className="text-ink">{k}:</span> {v}
+                    </li>
+                  ))}
+                </ul>
+              </details>
+              <p>Data generated {summary.data.generated}.</p>
+            </>
+          )}
         </div>
       </footer>
     </div>
@@ -352,38 +382,35 @@ function Section({
   );
 }
 
-const LEGEND_ICON: Record<string, typeof AlertTriangle> = {
-  Alert: AlertTriangle,
-  Watch: Eye,
-  Normal: CheckCircle2,
-  "Insufficient history": HelpCircle,
-};
-
-function MapLegend({ stations, layer }: { stations: Station[]; layer: MapLayer }) {
-  const counts = layerCounts(stations, layer);
+function MapLegend({
+  stations,
+  layer,
+  warning,
+}: {
+  stations: Station[];
+  layer: MapLayer;
+  warning: WarningSettings;
+}) {
+  const counts = layerCounts(stations, layer, warning);
   return (
     <table className="w-full text-[0.9375rem]">
       <caption className="sr-only">Wells per class</caption>
       <tbody>
-        {LAYER_CLASSES[layer].map((c) => {
-          const Icon = layer === "risk" ? LEGEND_ICON[c.key] : undefined;
-          return (
-            <tr key={c.key} className="border-b border-rule last:border-0">
-              <td className="py-1.5 pr-2">
-                <span className="flex items-center gap-2 text-ink">
-                  <span
-                    className="inline-block h-3 w-3 shrink-0 rounded-full"
-                    style={{ background: `var(--${c.color})`, opacity: c.faint ? 0.45 : 1 }}
-                    aria-hidden
-                  />
-                  {Icon && <Icon className="h-3.5 w-3.5 text-ink-2" aria-hidden />}
-                  {c.label}
-                </span>
-              </td>
-              <td className="tnum py-1.5 text-right text-ink-2">{int(counts[c.key] ?? 0)}</td>
-            </tr>
-          );
-        })}
+        {layerClasses(layer, warning).map((c) => (
+          <tr key={c.key} className="border-b border-rule last:border-0">
+            <td className="py-1.5 pr-2">
+              <span className="flex items-center gap-2 text-ink">
+                <span
+                  className="inline-block h-3 w-3 shrink-0 rounded-full"
+                  style={{ background: `var(--${c.color})`, opacity: c.faint ? 0.45 : 1 }}
+                  aria-hidden
+                />
+                {c.label}
+              </span>
+            </td>
+            <td className="tnum py-1.5 text-right text-ink-2">{int(counts[c.key] ?? 0)}</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );

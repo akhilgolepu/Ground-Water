@@ -3,9 +3,10 @@ import { useTheme } from "@/lib/theme";
 
 const links = [
   { href: "#network", label: "Network" },
+  { href: "#decide", label: "Warnings" },
   { href: "#wells", label: "Wells" },
-  { href: "#evidence", label: "Evidence" },
-  { href: "#agenda", label: "Research agenda" },
+  { href: "#findings", label: "Findings" },
+  { href: "#paper", label: "Paper" },
 ];
 
 export function SiteHeader() {
