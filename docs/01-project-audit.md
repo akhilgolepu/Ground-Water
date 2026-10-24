@@ -43,5 +43,8 @@ was computed on a constant per-well value. Those results must not be used in a p
 benchmark with naive baselines and conformal uncertainty). See
 [04-methodology-and-pilot-results.md](04-methodology-and-pilot-results.md).
 
-The legacy modules and backend endpoints remain in the repository for history. They are
-**deprecated**: the new dashboard reads only the research artefacts in `frontend/public/data/`.
+The legacy modules and backend endpoints were **retired in Phase 5** (2026-10-24) and moved to
+`legacy/` (`legacy/src/...`, `legacy/backend/`, `legacy/models/`, `legacy/data/feature_matrix.*`,
+`legacy/requirements.txt`, `legacy/notebooks/`). File paths in the table above refer to their
+original locations; prepend `legacy/` to find them. The dashboard is fully static and reads only
+`frontend/public/data/`.
