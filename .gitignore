@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Third-party downloads (IMD grids, NOAA indices): re-create with
+#   python -m src.research.forcing_download
+data/external/
+
+# Local logs
+logs/
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Derived research data (rebuild with: bash scripts/reproduce.sh --forcing)
+data/processed/gwl_observations_clean.parquet
+data/processed/gwl_campaigns.parquet
+data/processed/station_catalog.parquet
+data/processed/forcing_features.parquet
