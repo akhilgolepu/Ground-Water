@@ -1,0 +1,21 @@
+\begin{table*}[t]
+\caption{Test-period (2019--2025) point skill on identical rows: RMSE (m) and MSE skill against persistence with 95\,\% well-clustered bootstrap intervals.}
+\label{tab:skill}
+\centering\small
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrrr}
+\toprule
+Model & RMSE 3 mo & Skill 3 mo & RMSE 6 mo & Skill 6 mo & RMSE 12 mo & Skill 12 mo \\
+\midrule
+Persistence & 3.48 & 0 & 4.17 & 0 & 3.17 & 0 \\
+Anomaly persistence & 2.69 & 0.404 [0.354, 0.446] & 3.11 & 0.444 [0.393, 0.484] & 3.17 & 0.000 [0.000, 0.000] \\
+C: snapshot rainfall & 2.38 & 0.531 [0.496, 0.561] & 2.80 & 0.550 [0.512, 0.584] & 2.87 & 0.185 [0.143, 0.226] \\
+M0: memory & 2.37 & 0.536 [0.503, 0.563] & 2.80 & 0.549 [0.506, 0.586] & 2.84 & 0.201 [0.166, 0.235] \\
+M1: + past forcing & 2.36 & 0.539 [0.503, 0.568] & 2.75 & 0.564 [0.526, 0.598] & 2.82 & 0.212 [0.179, 0.244] \\
+M2: + ENSO/IOD & 2.36 & 0.541 [0.507, 0.569] & 2.73 & 0.572 [0.529, 0.608] & 2.82 & 0.212 [0.179, 0.243] \\
+M3: + oracle rain & 2.29 & 0.566 [0.536, 0.592] & 2.65 & 0.598 [0.559, 0.633] & 2.68 & 0.287 [0.256, 0.316] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\par\smallskip\begin{minipage}{0.95\textwidth}\footnotesize Rows: 25,340 / 24,073 / 32,472 forecasts at 3 / 6 / 12 months.\end{minipage}
+\end{table*}

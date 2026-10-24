@@ -27,3 +27,13 @@ data/processed/station_states.parquet
 data/processed/event_probabilities.parquet
 data/processed/forcing_monthly.parquet
 data/processed/well_rain_cells.parquet
+data/processed/wris_manual_updates.parquet
+
+# LaTeX build files
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.fdb_latexmk
+paper/*.fls
+paper/*.log
+paper/*.out

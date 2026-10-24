@@ -102,7 +102,7 @@ nominal level. None evaluates the *decision value* of a forecast.
 - User-supplied [1]–[10]: see `references.bib`.
 - [Alphoenixx benchmark repo](https://github.com/Alphoenixx/Benchmarking-ML-Models-for-Quarterly-Groundwater-Level-Forecasting-in-India)
 - [Malakar et al. (ORNL)](https://impact.ornl.gov/en/publications/deep-learning-based-forecasting-of-groundwater-level-trends-in-in/)
-- [Heudorfer et al. HESS 2024](https://hess.copernicus.org/articles/28/4407/2024/)
+- [Heudorfer et al. HESS 2024](https://doi.org/10.5194/hess-28-525-2024) · [Gomez et al. HESS 2024 (1-D CNN, Lower Saxony)](https://doi.org/10.5194/hess-28-4407-2024)
 - [TFT vs N-HiTS Germany (DGGV)](https://www.dggv.de/e-publikationen/advancing-short-term-groundwater-level-forecasting-using-temporal-fusion-transformer-tft-and-neural-hierarchical-interpolation-for-time-series-forecasting-n-hiits/)
 - [Validation schemes (EGUsphere 2025-3539)](https://egusphere.copernicus.org/preprints/2025/egusphere-2025-3539/)
 - [Conformal nitrate preprint (SSRN)](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7578013)
