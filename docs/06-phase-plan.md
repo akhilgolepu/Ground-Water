@@ -66,7 +66,7 @@ coverage ≥ 95 % of its months, and a unit test proves non-oracle features use 
 **Exit check:** a table of skill gains with CIs for every arm × horizon, and a written answer to
 RQ1 that holds under the robustness checks.
 
-## Phase 3 — Uncertainty calibration (RQ2)
+## Phase 3 — Uncertainty calibration (RQ2) — ✅ done (see 09)
 
 | Step | Action |
 |---|---|

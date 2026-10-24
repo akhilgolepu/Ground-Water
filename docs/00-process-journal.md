@@ -163,4 +163,46 @@ dashboard · `9468507` Phase 1.
 ## Stage 5 — Phase 3: uncertainty calibration, RQ2 (in progress)
 
 **Request.** "Start phase 3; document the whole process, including what you've done since the
-beginning." This journal is the response to the second half; entries below record Phase 3.
+beginning."
+
+**Work.**
+1. *Documentation.* Wrote this journal back to the first review; froze `05-worklog.md`; indexed the
+   journal as the start page (`146bb42`). Saved a standing rule to append an entry every step.
+2. *Methods* (`src/research/calibration.py`): interval methods on the Phase 2 M2 forecast —
+   Gaussian, split conformal, Mondrian depth × season, Mondrian depth × region, normalised (σ̂
+   cross-fitted by well), CQR (quantile XGBoost), and online methods that recalibrate with residuals
+   already observed (target ≤ T − h), one with adaptive conformal inference (ACI, γ = 0.05 fixed in
+   advance). Small cells fall back to coarser pools.
+3. *Evaluation:* coverage at 50/80/90/95 %, conditional by depth, region, season and record length,
+   binomial tests with Holm correction, Winkler score, CRPS, PIT histograms, ACI γ sweep.
+4. *Tests:* 8 new unit tests (39 in total), including a no-look-ahead test for the online methods.
+5. Fixed a merge bug on the first run (`target_season` present on both sides).
+
+**Findings.**
+- One interval width covers 88 % of readings in wells < 5 m but 46–51 % in wells ≥ 40 m.
+- **Drift explained:** the calibration years 2016–18 followed the 2014–15 droughts, while 2019–22 had
+  strong monsoons (+14 %, +13 %, +9 %), so water came in shallower than forecast (up to 73 % of
+  readings in 2022). Static calibration therefore under-covers by 2–5 points.
+- Rolling recalibration + ACI keeps every depth and region class within 1.6 / 1.7 / 3.02 points of
+  nominal at 3 / 6 / 12 months. Season misses remain (August targets 73.4 % at 12 months).
+- After seeing that, added two variants (labelled post hoc): season in the cells, and σ̂-normalised
+  scores. They fix the season misses and the normalised one is ~12 % sharper (Winkler), at the cost of
+  slightly larger region misses.
+- Gaussian intervals over-cover by ten points because the datum jumps inflate σ.
+
+**Decisions.**
+- Primary method = the pre-registered Mondrian D×R + recal + ACI with γ = 0.05. One cell (Himalaya &
+  north-east, 12 months, 80 %) is at 83.02 %: 0.02 points beyond tolerance, on the conservative side,
+  Holm p = 0.23. γ was **not** re-tuned on the test period to remove it.
+- The ±3-point tolerance, not the binomial test, is the practical criterion: with up to 22 000
+  correlated readings per class the test flags 1-point deviations.
+
+**Artefacts.** [09-uncertainty-calibration.md](09-uncertainty-calibration.md); `reports/calibration/`
+(coverage, CRPS, PIT, γ sweep, four figures); `scripts/reproduce.sh --phase3`.
+
+---
+
+## Stage 6 — Phase 4: decision value, RQ3 (next)
+
+Planned: cost–loss relative economic value of the exceedance warnings, using the Phase 3 intervals
+and the Phase 2 oracle arm to value a perfect monsoon forecast.
