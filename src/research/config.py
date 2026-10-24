@@ -12,6 +12,7 @@ DATA_PROCESSED_DIR = Path("data/processed")
 EXTERNAL_DIR = Path("data/external")  # git-ignored third-party downloads
 REPORTS_DIR = Path("reports/benchmark")
 FORCING_REPORTS_DIR = Path("reports/forcing")
+SKILL_REPORTS_DIR = Path("reports/skill")
 FRONTEND_DATA_DIR = Path("frontend/public/data")
 
 # ── Time-blocked split (by forecast *target* year) ──────────────────────────

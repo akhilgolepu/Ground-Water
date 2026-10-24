@@ -20,3 +20,4 @@ data/processed/gwl_observations_clean.parquet
 data/processed/gwl_campaigns.parquet
 data/processed/station_catalog.parquet
 data/processed/forcing_features.parquet
+data/processed/skill_predictions.parquet

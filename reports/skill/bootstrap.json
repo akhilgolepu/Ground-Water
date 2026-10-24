@@ -1,0 +1,332 @@
+[
+  {
+    "h": 1,
+    "model": "M0 memory",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.5358834031760878,
+    "ci": [
+      0.502718014579277,
+      0.5629246297883601
+    ]
+  },
+  {
+    "h": 1,
+    "model": "M1 + past forcing",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.53934221650986,
+    "ci": [
+      0.5033246120569134,
+      0.5684101057265509
+    ]
+  },
+  {
+    "h": 1,
+    "model": "M2 + ENSO/IOD",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.541192209731107,
+    "ci": [
+      0.5073888546698413,
+      0.569134197338139
+    ]
+  },
+  {
+    "h": 1,
+    "model": "M3 + oracle rain",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.5663321682407583,
+    "ci": [
+      0.5355845226931403,
+      0.592382034807691
+    ]
+  },
+  {
+    "h": 1,
+    "model": "C snapshot control",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.5312141605578666,
+    "ci": [
+      0.4960536246852567,
+      0.5610295873021265
+    ]
+  },
+  {
+    "h": 1,
+    "model": "anomaly_persistence",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.4037551192236064,
+    "ci": [
+      0.35362514683610063,
+      0.44614039561663527
+    ]
+  },
+  {
+    "h": 1,
+    "model": "M1 + past forcing vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": 0.007452466379013201,
+    "ci": [
+      -0.013613957750792771,
+      0.028572270602185295
+    ]
+  },
+  {
+    "h": 1,
+    "model": "M2 + ENSO/IOD vs M1 + past forcing",
+    "stat": "mse_reduction",
+    "estimate": 0.004015981684344028,
+    "ci": [
+      -0.011400529665154441,
+      0.01916693630104863
+    ]
+  },
+  {
+    "h": 1,
+    "model": "M3 + oracle rain vs M2 + ENSO/IOD",
+    "stat": "mse_reduction",
+    "estimate": 0.054794096880782184,
+    "ci": [
+      0.040057964352668764,
+      0.06956223697362479
+    ]
+  },
+  {
+    "h": 1,
+    "model": "C snapshot control vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": -0.010060494819996268,
+    "ci": [
+      -0.026103959442290225,
+      0.004906927729179455
+    ]
+  },
+  {
+    "h": 1,
+    "model": "M2 + ENSO/IOD vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": 0.011438519094876032,
+    "ci": [
+      -0.0043999888186713855,
+      0.02710930452437638
+    ]
+  },
+  {
+    "h": 2,
+    "model": "M0 memory",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.5492732433138383,
+    "ci": [
+      0.5059852985758415,
+      0.5858708126078708
+    ]
+  },
+  {
+    "h": 2,
+    "model": "M1 + past forcing",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.5641295789397611,
+    "ci": [
+      0.525565919129026,
+      0.5982832909674305
+    ]
+  },
+  {
+    "h": 2,
+    "model": "M2 + ENSO/IOD",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.5719602196710412,
+    "ci": [
+      0.5294130166863316,
+      0.6077722529025751
+    ]
+  },
+  {
+    "h": 2,
+    "model": "M3 + oracle rain",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.5981085699315476,
+    "ci": [
+      0.5590482635593728,
+      0.6330570558260019
+    ]
+  },
+  {
+    "h": 2,
+    "model": "C snapshot control",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.5502509480035649,
+    "ci": [
+      0.5121403875529651,
+      0.583784040298286
+    ]
+  },
+  {
+    "h": 2,
+    "model": "anomaly_persistence",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.4442467838040063,
+    "ci": [
+      0.3931708145426398,
+      0.4836540481902888
+    ]
+  },
+  {
+    "h": 2,
+    "model": "M1 + past forcing vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": 0.03296084691121892,
+    "ci": [
+      0.013986368389270917,
+      0.05125380762629075
+    ]
+  },
+  {
+    "h": 2,
+    "model": "M2 + ENSO/IOD vs M1 + past forcing",
+    "stat": "mse_reduction",
+    "estimate": 0.01796552450664657,
+    "ci": [
+      0.0017417779024144903,
+      0.033166362802070325
+    ]
+  },
+  {
+    "h": 2,
+    "model": "M3 + oracle rain vs M2 + ENSO/IOD",
+    "stat": "mse_reduction",
+    "estimate": 0.061088598448515,
+    "ci": [
+      0.02780800437892945,
+      0.08662674730724841
+    ]
+  },
+  {
+    "h": 2,
+    "model": "C snapshot control vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": 0.0021691738402992433,
+    "ci": [
+      -0.021357141126787882,
+      0.023914299437050725
+    ]
+  },
+  {
+    "h": 2,
+    "model": "M2 + ENSO/IOD vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": 0.050334212514922205,
+    "ci": [
+      0.03264684373569264,
+      0.06769875027213525
+    ]
+  },
+  {
+    "h": 4,
+    "model": "M0 memory",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.20126086079417693,
+    "ci": [
+      0.16633579697266965,
+      0.2354921070925871
+    ]
+  },
+  {
+    "h": 4,
+    "model": "M1 + past forcing",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.2116810029271846,
+    "ci": [
+      0.1788491670765491,
+      0.24394527240784797
+    ]
+  },
+  {
+    "h": 4,
+    "model": "M2 + ENSO/IOD",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.21155465877325286,
+    "ci": [
+      0.1794892848209331,
+      0.24286792444146635
+    ]
+  },
+  {
+    "h": 4,
+    "model": "M3 + oracle rain",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.2870864162250728,
+    "ci": [
+      0.2562763086089611,
+      0.31616587099758575
+    ]
+  },
+  {
+    "h": 4,
+    "model": "C snapshot control",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.18482086435147627,
+    "ci": [
+      0.14253544285812406,
+      0.2262817783524865
+    ]
+  },
+  {
+    "h": 4,
+    "model": "anomaly_persistence",
+    "stat": "skill_vs_persistence",
+    "estimate": 0.0,
+    "ci": [
+      0.0,
+      1.1102230246251565e-16
+    ]
+  },
+  {
+    "h": 4,
+    "model": "M1 + past forcing vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": 0.013045738741897961,
+    "ci": [
+      -0.0020402215145384206,
+      0.028732494338362665
+    ]
+  },
+  {
+    "h": 4,
+    "model": "M2 + ENSO/IOD vs M1 + past forcing",
+    "stat": "mse_reduction",
+    "estimate": -0.00016027034030741127,
+    "ci": [
+      -0.01107100970247064,
+      0.01027898647126954
+    ]
+  },
+  {
+    "h": 4,
+    "model": "M3 + oracle rain vs M2 + ENSO/IOD",
+    "stat": "mse_reduction",
+    "estimate": 0.09579834327424597,
+    "ci": [
+      0.07659975233795864,
+      0.11440535024809644
+    ]
+  },
+  {
+    "h": 4,
+    "model": "C snapshot control vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": -0.020582435035106483,
+    "ci": [
+      -0.0403411635152752,
+      -0.0011402726129021664
+    ]
+  },
+  {
+    "h": 4,
+    "model": "M2 + ENSO/IOD vs M0 memory",
+    "stat": "mse_reduction",
+    "estimate": 0.01288755924657825,
+    "ci": [
+      -0.000965069618026415,
+      0.028603666588837517
+    ]
+  }
+]
