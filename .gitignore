@@ -23,3 +23,5 @@ data/processed/forcing_features.parquet
 data/processed/skill_predictions.parquet
 data/processed/reference_predictions.parquet
 data/processed/intervals_80.parquet
+data/processed/station_states.parquet
+data/processed/event_probabilities.parquet

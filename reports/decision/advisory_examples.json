@@ -1,0 +1,74 @@
+[
+  {
+    "well_id": "232854080061401",
+    "target_idx": 8080,
+    "q50": 11.9,
+    "lo80": 9.34,
+    "hi80": 14.91,
+    "p_e1": 0.774,
+    "thr_e1": 8.33,
+    "trigger": 0.3,
+    "observed_event": false,
+    "text": "Well 232854080061401, forecast for January 2020: water about 11.9 m below ground (80% range 9.3–14.9 m). Chance it is deeper than this well's usual level for the season (8.3 m): 77%. Warning: plan for a deeper-than-usual water level."
+  },
+  {
+    "well_id": "223322075072001",
+    "target_idx": 8088,
+    "q50": 41.67,
+    "lo80": 36.78,
+    "hi80": 48.9,
+    "p_e1": 0.867,
+    "thr_e1": 18.11,
+    "trigger": 0.3,
+    "observed_event": false,
+    "text": "Well 223322075072001, forecast for January 2022: water about 41.7 m below ground (80% range 36.8–48.9 m). Chance it is deeper than this well's usual level for the season (18.1 m): 87%. Warning: plan for a deeper-than-usual water level."
+  },
+  {
+    "well_id": "265145080553501",
+    "target_idx": 8080,
+    "q50": 30.86,
+    "lo80": 28.0,
+    "hi80": 34.31,
+    "p_e1": 0.774,
+    "thr_e1": 24.96,
+    "trigger": 0.3,
+    "observed_event": true,
+    "text": "Well 265145080553501, forecast for January 2020: water about 30.9 m below ground (80% range 28.0–34.3 m). Chance it is deeper than this well's usual level for the season (25.0 m): 77%. Warning: plan for a deeper-than-usual water level."
+  },
+  {
+    "well_id": "195630079174001",
+    "target_idx": 8090,
+    "q50": 3.92,
+    "lo80": 0.5,
+    "hi80": 7.07,
+    "p_e1": 0.095,
+    "thr_e1": 6.12,
+    "trigger": 0.3,
+    "observed_event": false,
+    "text": "Well 195630079174001, forecast for August (monsoon) 2022: water about 3.9 m below ground (80% range 0.5–7.1 m). Chance it is deeper than this well's usual level for the season (6.1 m): 10%. No warning: a deeper-than-usual level is not likely enough to act on."
+  },
+  {
+    "well_id": "240300083060001",
+    "target_idx": 8082,
+    "q50": 5.07,
+    "lo80": 3.59,
+    "hi80": 6.66,
+    "p_e1": 0.082,
+    "thr_e1": 10.14,
+    "trigger": 0.3,
+    "observed_event": true,
+    "text": "Well 240300083060001, forecast for August (monsoon) 2020: water about 5.1 m below ground (80% range 3.6–6.7 m). Chance it is deeper than this well's usual level for the season (10.1 m): 8%. No warning: a deeper-than-usual level is not likely enough to act on."
+  },
+  {
+    "well_id": "220530069180501",
+    "target_idx": 8090,
+    "q50": 2.67,
+    "lo80": 0.78,
+    "hi80": 4.82,
+    "p_e1": 0.019,
+    "thr_e1": 11.28,
+    "trigger": 0.3,
+    "observed_event": false,
+    "text": "Well 220530069180501, forecast for August (monsoon) 2022: water about 2.7 m below ground (80% range 0.8–4.8 m). Chance it is deeper than this well's usual level for the season (11.3 m): 2%. No warning: a deeper-than-usual level is not likely enough to act on."
+  }
+]
