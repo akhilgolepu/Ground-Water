@@ -25,3 +25,5 @@ data/processed/reference_predictions.parquet
 data/processed/intervals_80.parquet
 data/processed/station_states.parquet
 data/processed/event_probabilities.parquet
+data/processed/forcing_monthly.parquet
+data/processed/well_rain_cells.parquet

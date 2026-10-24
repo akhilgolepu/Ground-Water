@@ -412,6 +412,22 @@ def plot_sanity(report: dict, campaigns: pd.DataFrame, feats: pd.DataFrame, path
     return {str(i.mid.round(2)): round(float(v), 2) for i, v in med.items()}
 
 
+def save_monthly_table(rain: np.ndarray, used: np.ndarray, glat: np.ndarray, glon: np.ndarray, catalog: pd.DataFrame):
+    """Step 1.4 deliverable: one row per (IMD cell used by a well, month) and the well → cell map."""
+    n_lon = len(glon)
+    months = pd.date_range(f"{FORCING_FIRST_YEAR}-01-01", periods=rain.shape[1], freq="MS")
+    table = pd.DataFrame({
+        "cell": np.repeat(used, len(months)),
+        "lat": np.repeat(glat[used // n_lon], len(months)),
+        "lon": np.repeat(glon[used % n_lon], len(months)),
+        "month": np.tile(months, len(used)),
+        "rain_mm": rain.reshape(-1),
+    })
+    table.to_parquet(DATA_PROCESSED_DIR / "forcing_monthly.parquet", index=False)
+    catalog[["well_id", "rain_cell"]].rename(columns={"rain_cell": "cell"}).to_parquet(
+        DATA_PROCESSED_DIR / "well_rain_cells.parquet", index=False)
+
+
 # ── Driver ──────────────────────────────────────────────────────────────────
 
 def run_forcing_features():
@@ -433,6 +449,7 @@ def run_forcing_features():
     rain = rain_grid.reshape(-1, N_MONTHS)[used]  # [used cells, months]
     well_row = catalog.set_index("well_id")["rain_cell"].map(cell_pos).astype(float)
     print(f"  {len(used)} distinct rain cells for {int((cells >= 0).sum())}/{len(cells)} wells")
+    save_monthly_table(rain, used, glat, glon, catalog)
 
     tmean, well_row_t = None, None
     try:

@@ -59,3 +59,15 @@ training period. Calibration (2016–18) and test (2019–25) rows never see the
   explains the zero-rain blocks and is a source of error in sparse areas.
 - Temperature is only 1°, so it is coarse for local evapotranspiration.
 - DWLR telemetry wells are not on the campaign grid yet (gap G4). Their forcing will come from the same monthly cells.
+
+## Exit check (re-audited before Phase 5)
+
+- **Per-well coverage:** 5 510 of 5 516 manual wells (99.9 %) have `rain_12m` on ≥ 95 % of their
+  campaigns. The six exceptions: two wells whose coordinates fall in Bangladesh (no IMD cell within
+  3 rings) and four wells in the NW Rajasthan / Kutch zero-rain block set to missing (§ zero-rain repair).
+  SPI-3 is defined for ≥ 95 % of campaigns at 97 % of wells; it is undefined for calendar months that
+  are dry in almost every year, where a gamma fit is meaningless.
+- **Step 1.4 deliverable** (added in the audit): `data/processed/forcing_monthly.parquet` holds one row
+  per IMD cell used by a well and month (987 120 rows, 2 285 cells, 1990–2025), and
+  `data/processed/well_rain_cells.parquet` maps each well to its cell. Both are git-ignored and rebuilt
+  by `python -m src.research.forcing_features`.

@@ -6,15 +6,15 @@ national-scale groundwater forecasting for India* (gaps G1 + G2 + G3, see
 shows the paper's results.
 
 Every phase has steps, deliverables and an exit check. A phase is done only when its exit
-check passes and [05-worklog.md](05-worklog.md) records it. All Python runs in `conda activate anpr`.
+check passes and [00-process-journal.md](00-process-journal.md) records it. All Python runs in `conda activate anpr`.
 
 | Phase | Name | Answers | Depends on |
 |---|---|---|---|
 | 0 | Foundations and reproducibility ✅ 2026-10-24 | — | — |
 | 1 | Forcing data and features ✅ 2026-10-24 | Data for RQ1 | 0 |
-| 2 | Skill decomposition experiments | RQ1 | 1 |
-| 3 | Uncertainty calibration | RQ2 | 2 |
-| 4 | Decision value of warnings | RQ3 | 3 |
+| 2 | Skill decomposition experiments ✅ 2026-10-24 | RQ1 | 1 |
+| 3 | Uncertainty calibration ✅ 2026-10-24 | RQ2 | 2 |
+| 4 | Decision value of warnings ✅ 2026-10-24 | RQ3 | 3 |
 | 5 | Dashboard integration | — | 2–4 |
 | 6 | Manuscript and release | — | 2–5 |
 
