@@ -160,7 +160,7 @@ dashboard · `9468507` Phase 1.
 
 ---
 
-## Stage 5 — Phase 3: uncertainty calibration, RQ2 (in progress)
+## Stage 5 — Phase 3: uncertainty calibration, RQ2 (2026-10-24)
 
 **Request.** "Start phase 3; document the whole process, including what you've done since the
 beginning."
@@ -250,7 +250,65 @@ paired differences, triggers, case study, advisories, three figures); `scripts/r
 
 ---
 
-## Stage 7 — Phase 5: dashboard integration (next)
+## Stage 7 — Audit of Phases 0–4 and Phase 5: dashboard integration (2026-10-24)
 
-Planned: export Phases 2–4 results to the dashboard (skill decomposition, calibrated intervals,
-warnings with the trigger rule, advisories), refresh the data from India-WRIS, static deployment.
+**Request.** "Proceed; also go through all the phases thoroughly and finish phase 6 as well."
+
+**Audit of Phases 0–4.** Re-read every step and exit check of the plan against the deliverables.
+- All Phase 0.3 unit tests were present. Phase 1 lacked its step 1.4 deliverable (a cell-month forcing
+  table): added `forcing_monthly.parquet` and the well → cell map. Per-well forcing coverage was never
+  recorded: 5 510 of 5 516 manual wells are at ≥ 95 % (the six exceptions are documented in docs/07).
+- The plan's status table and journal pointer were stale; updated (`cc7543b`).
+
+**Work (Phase 5).**
+1. *India-WRIS (5.4).* Found no documented API. Reverse-engineered the portal's endpoints from the open
+   QGIS plugin; documented quirks (406 = no rows, no mode filter, shifted CSV header, duplicate district
+   spellings). Wrote `src/research/wris_refresh.py` (paced, cached, writes a separate updates file that never
+   touches the research snapshot). A Rajasthan pilot was run (results in docs/11).
+2. *Export (5.1).* `src/research/export_dashboard.py` writes summary, stations, 64 per-well bucket files and
+   skill / calibration / decision payloads, each naming its source report. Operational forecasts refit M0 and
+   M2 with the tuned settings and abort if they differ from the Phase 2 test predictions by more than 1 mm.
+   Refactored the forcing loader and `load_dataset` for this, verified byte-identical outputs, and removed
+   the pilot export from `benchmark.py`.
+3. *Dashboard (5.2–5.3).* Warnings panel (event, horizon, cost of acting → hit rate, false alarms, value with CI,
+   wells flagged), well view with forecasts with and without rainfall and per-well errors, findings for RQ1–RQ3.
+4. *Static (5.5).* Removed the API proxy; moved the legacy pipeline and FastAPI backend to `legacy/` with a
+   README explaining why its results are invalid.
+
+**Findings.**
+- At 390 px the long source paths overflowed by 262 px; fixed with wrapping.
+- A calibrated probability displayed as "100 %"; probabilities now display as "> 99 %" / "< 1 %" at the extremes.
+- The hero chart's threshold label covered data points; moved into the legend.
+
+**Checks.** `tests/research/test_dashboard_trace.py` (5 tests) compares the dashboard data with the reports.
+Visual QA in light, dark and 390 px on the dev server and on the static production build: no console errors,
+no overflow.
+
+**Commits.** `5cee084` groundwork · `85a3a80` export · `7362d36` dashboard · `b085d38` legacy retired.
+
+---
+
+## Stage 8 — Phase 6: manuscript and release (2026-10-24)
+
+**Work.**
+1. *Figures and tables (6.1).* `src/research/paper_figures.py` generates eight publication figures, five LaTeX
+   tables and `paper/numbers.tex` (macros for every number quoted in the text) from `reports/`.
+2. *Manuscript (6.2).* `paper/main.tex` → `main.pdf` (12 pages): introduction positioned against Malakar et al.
+   (2021), the 2026 benchmark and Kim et al. (2026); data; methods; results for RQ1–RQ3; discussion;
+   limitations; conclusions. Portable article layout; to be ported to the Copernicus class at submission.
+3. *References.* Found that a citation used since Stage 2 was wrong: HESS 28:4407 is Gomez et al. (1-D CNN,
+   Lower Saxony), not Heudorfer et al. (that is HESS 28:525). Fixed in the bibliography and docs/02. Replaced
+   an unverified Malakar et al. author list. Added 20 references; 37 of 38 DOIs checked against OpenAlex.
+4. *Internal review (6.5).* New end-to-end look-ahead test on the real data (features at three cutoff
+   origins identical with and without later readings). Review in [12-internal-review.md](12-internal-review.md).
+   Two manuscript fixes: the probability recalibrations are now disclosed as post hoc, and the default
+   triggers are called illustrative because they were read from the test period.
+5. *Release package (6.3).* README rewritten around the results; `CITATION.cff`; local tag `v1.0.0-rc1`.
+6. *Submission package (6.4).* Cover letter draft and checklist in `paper/submission/`.
+
+**Not done, and why.** Pushing to GitHub, minting the Zenodo DOI, posting the preprint and submitting are
+outward-facing actions that need the author's accounts and decisions (licence, authorship, data
+redistribution terms). They are listed in `paper/submission/checklist.md`. The Phase 6 exit check
+("submission confirmation and a public, citable release") therefore remains open until the author acts.
+
+**Commits.** `c8bc5be` figures and draft · `bf5199c` internal review · `8eab5b2` README and citation.
